@@ -12,4 +12,5 @@ Todo & notes
 * Refer to cancer subtyper package
 * consistently use patients in rows & features in cols
 * Documentation using roxygen via markdown
+* Use an assertion package for defensive programing
 
