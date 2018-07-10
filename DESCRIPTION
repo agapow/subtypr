@@ -1,8 +1,8 @@
 Package: subtypr
 Type: Package
-Title: Robust and validated patient subtyping for precision medicine
+Title: Robust and Validated Patient Subtyping for Precision Medicine
 Version: 0.1.0
-Author: Romain Guedon, Paul Agapow
+Author: Romain Guédon, Paul Agapow
 Maintainer: Paul Agapow <p.agapow@imperial.ac.uk>
 Description: While precision / personalised / stratified medicine requires
     patients to be assigned to a class, identifying and validating these
@@ -12,3 +12,7 @@ Description: While precision / personalised / stratified medicine requires
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Imports:
+    devtools
+Suggests:
+Roxygen: list(markdown = TRUE)
