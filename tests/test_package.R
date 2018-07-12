@@ -1,16 +1,45 @@
+load("./data/data.RData")
 
-
-
-library(subtypr)
-
-
-load("data/data.RData")
-
-snf <- GetMethodInfo("snf")
-asw <- GetMetricInfo()[[1]]
-grid.support <- list(K = 5:6, alpha = 0.5, cluster.number = 2)
+grid.support <- list(K = 5, alpha = 0.5, cluster.number = 2)
 
 data.list <- lapply(datasets, t)
 
-tuneMe <- Tuning(data.list = data.list, method = snf, grid.support = grid.support, metric = asw, parallel = TRUE, plot = TRUE)
+
+
+
+
+
+
+
+# formals(GetMethodInfo("anf")$Func)
+grid.support <- list(cluster.number = 2:3,
+                     k.affi = 5,
+                     K.fusion = 5)
+
+tuning.result <- Tuning(data.list = data.list, method = "anf",
+                        grid.support = grid.support, metric = "nmi",
+                        ground.truth = real.groundtruth, parallel = FALSE, plot = TRUE)
+
+
+
+# method <- GetMethodInfo("anf")
+# all.args <- as.list(base::formals(method$Func))
+# all.args[names(grid.support)] <- grid.support
+#
+# # remove data.list from the args
+# i.data <- which(names(all.args) == "data.list")
+# all.args <- all.args[-i.data]
+# print("all.atgs = ")
+# print(all.args)
+#
+# # span the grid
+# grid <- base::expand.grid(all.args, stringsAsFactors = )
+# l <- dim(grid)[1]
+# print("grid  = ")
+# print(grid)
+#
+
+
+
+
 
