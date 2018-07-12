@@ -16,3 +16,4 @@ Imports:
     devtools
 Suggests:
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1

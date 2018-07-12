@@ -12,21 +12,20 @@
 #' @export
 #'
 #' @examples
-tune_exhaustively <- function (
-   tune_fxn,
-   params,
-   maximize,
-   seed=NULL,
-   cores=NULL
-) {
-   ## Preconditions & preparation:
-   # set random seed if needed
-   if (is.null (seed)) { seed <- sample.int (.Machine$integer.max, 1L) }
-   # if maximize is string, assume it's an attribute on function returns
-   if (is.character (maximize)) { maximize <- function (r) { attr (r, maximize, exact=T) } }
+tune_exhaustively <- function(tune_fxn, params, maximize, seed = NULL, cores = NULL) {
+    ## Preconditions & preparation: set random seed if needed
+    if (is.null(seed)) {
+        seed <- sample.int(.Machine$integer.max, 1L)
+    }
+    # if maximize is string, assume it's an attribute on function returns
+    if (is.character(maximize)) {
+        maximize <- function(r) {
+            attr(r, maximize, exact = T)
+        }
+    }
 
 
-   ## Main:
+    ## Main:
 
 
 }
@@ -46,21 +45,20 @@ tune_exhaustively <- function (
 #' @export
 #'
 #' @examples
-tune_lhc <- function (
-   tune_fxn,
-   params,
-   maximize,
-   seed=NULL,
-   cores=NULL
-) {
-   ## Preconditions & preparation:
-   # set random seed if needed
-   if (is.null (seed)) { seed <- sample.int (.Machine$integer.max, 1L) }
-   # if maximize is string, assume it's an attribute on function returns
-   if (is.character (maximize)) { maximize <- function (r) { attr (r, maximize, exact=T) } }
+tune_lhc <- function(tune_fxn, params, maximize, seed = NULL, cores = NULL) {
+    ## Preconditions & preparation: set random seed if needed
+    if (is.null(seed)) {
+        seed <- sample.int(.Machine$integer.max, 1L)
+    }
+    # if maximize is string, assume it's an attribute on function returns
+    if (is.character(maximize)) {
+        maximize <- function(r) {
+            attr(r, maximize, exact = T)
+        }
+    }
 
 
-   ## Main:
+    ## Main:
 
 
 }

@@ -8,12 +8,12 @@
 #' @export
 #'
 #' @examples
-generate_synth_data <- function (dims) {
-
+generate_synth_data <- function(dims) {
+    
 }
 
 
-#' Generate "multi-omic" synthetic data matrices  for validation
+#' Generate 'multi-omic' synthetic data matrices  for validation
 #'
 #' For validation and testing multi-omic / integrative methods, we need
 #'
@@ -24,8 +24,8 @@ generate_synth_data <- function (dims) {
 #' @export
 #'
 #' @examples
-generate_synth_data_multi <- function (n_samples, n_layers) {
-
+generate_synth_data_multi <- function(n_samples, n_layers) {
+    
 }
 
 
@@ -37,6 +37,6 @@ generate_synth_data_multi <- function (n_samples, n_layers) {
 #' @export
 #'
 #' @examples
-generate_synth_data <- function (dims) {
-
+generate_synth_data <- function(dims) {
+    
 }

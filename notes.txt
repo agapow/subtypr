@@ -8,7 +8,7 @@ Todo & notes
     - with & without ground truth
   - access to handy methods
   - tuning methods
-  - copatiability with caret?
+  - compatibility with caret?
 * Refer to cancer subtyper package
 * consistently use patients in rows & features in cols
 * Documentation using roxygen via markdown
