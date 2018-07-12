@@ -16,28 +16,32 @@ metrics.list <- list()
 
 # for affinity matrix:
 
-aws.affinity <- list()
+asw.affinity <- list()
+asw.affinity$name <- "asw.affinity"
+asw.affinity$label <- "Average silhouette width (affinity matrix)"
 
-aws.affinity$label <- "Average silhouette width for affinity matrix"
-
-aws.affinity$Metric <- function(res, ground.truth = NULL, plot = F) {
+asw.affinity$Metric <- function(res, ground.truth = NULL, plot = F) {
   if (!plot) {
     return(summary(CancerSubtypes::silhouette_SimilarityMatrix(group = res$partition, similarity_matrix = res$data.returned))$avg.width)
   } else {
     silx <- CancerSubtypes::silhouette_SimilarityMatrix(group = res$partition, similarity_matrix = res$data.returned)
     plot(silx)
+    return(summary(silx)$avg.width)
   }
 }
 
-aws.affinity$maximize <- TRUE
+asw.affinity$maximize <- TRUE
 
-metrics.list$aws.affinity <- aws.affinity
+metrics.list$asw.affinity <- asw.affinity
 
 # Adjusted Rand Index
 
 ari <- list()
+ari$name <- "ari"
 ari$label <- "Adjusted rand index"
 ari$Metric <- function(res, ground.truth, plot = F) {
+  if (is.null(ground.truth)) stop("ground.truth is missing")
+  ground.truth <- as.integer(ground.truth)
   fpc::cluster.stats(d = NULL, clustering = res$partition, alt.clustering = ground.truth, compareonly = T)$corrected.rand
 }
 
@@ -48,8 +52,11 @@ metrics.list$ari <- ari
 # Normalized Mutual Information
 
 nmi <- list()
+nmi$name <- "nmi"
 nmi$label <- "Normalized mutual information"
 nmi$Metric <- function(res, ground.truth, plot = F) {
+  if (is.null(ground.truth)) stop("ground.truth is missing")
+  ground.truth <- as.integer(ground.truth)
   SNFtool::calNMI(x = res$partition, y = ground.truth)
 }
 nmi$maximize <- TRUE
@@ -59,8 +66,11 @@ metrics.list$nmi <- nmi
 # Meila's variation index VI
 
 meilaVI <- list()
+meilaVI$name <- "meilaVI"
 meilaVI$label <- "Meila's variation index VI"
 meilaVI$Metric <- function(res, ground.truth, plot = F) {
+  if (is.null(ground.truth)) stop("ground.truth is missing")
+  ground.truth <- as.integer(ground.truth)
   fpc::cluster.stats(d = NULL, clustering = res$partition, alt.clustering = ground.truth, compareonly = T)$vi
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{GetMethodInfo}
 \alias{GetMethodInfo}
-\title{GetMethodInfo}
+\title{Load built-in methods}
 \usage{
 GetMethodInfo(method = NULL)
 }
@@ -13,5 +13,5 @@ GetMethodInfo(method = NULL)
 a method list
 }
 \description{
-GetMethodInfo
+Load built-in methods
 }

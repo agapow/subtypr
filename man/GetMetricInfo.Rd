@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{GetMetricInfo}
 \alias{GetMetricInfo}
-\title{GetMetrics Info}
+\title{Load built-in metrics}
 \usage{
 GetMetricInfo(metric = NULL)
 }
@@ -13,5 +13,5 @@ GetMetricInfo(metric = NULL)
 a metric list
 }
 \description{
-GetMetrics Info
+Load built-in metrics
 }

@@ -3,19 +3,45 @@
 
 
 
-Evaluation <- function(data.list, method, grid, grid.row, metric, ground.truth = NULL) {
-  full.args <- as.list(grid[grid.row,])
+Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
+  print("I'm in Evaluation")
+  full.args <- as.list(base::formals(method$Func))
   full.args$data.list <- data.list
+  full.args[names(as.list(grid[grid.row,]))] <- as.list(grid[grid.row,])
+  print("length = ")
+  print(length(full.args))
   res <- do.call(method$Func, full.args)
+  if (return.res) {
+     return(res)
+  }
   return(metric$Metric(res = res, ground.truth = ground.truth, plot = F))
-
 }
 
 
 Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL, parallel = TRUE, plot = FALSE, quiet = FALSE) {
-  # compute the grid
+
+  if (is.character(method)) method <- GetMethodInfo(method)
+  if (is.character(metric)) metric <- GetMetricInfo(metric)
+
+  # prepare the grid generation
+
+  # all.args <- as.list(base::formals(method$Func))
+  # all.args[names(grid.support)] <- grid.support
+  #   # remove data.list from the args
+  # i.data <- which(names(all.args) == "data.list")
+  # all.args <- all.args[-i.data]
+  # print("all.atgs = ")
+  # print(all.args)
+  # span the grid
+
   grid <- base::expand.grid(grid.support)
   l <- dim(grid)[1]
+
+  print("grid  = ")
+  print(grid)
+
+  print("class(grid) = ")
+  print(class(grid))
 
   # because sometimes it's too long, we warn the user:
   if (!quiet) print(paste0("Evaluation of ",l," possibilities..."))
@@ -31,14 +57,14 @@ Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL,
     evaluations <- lapply(1:l, function(grid.row) Evaluation(data.list, method, grid, grid.row, metric, ground.truth))
   }
   if (plot) {
-     plot(x = 1:l, y = evaluations, xlab = "grid points", ylab = metric$label, main = paste0(metric$label, " for all grid points"))
+    plot(x = 1:l, y = evaluations, xlab = "grid points", ylab = metric$label, main = paste0(metric$label, " for all grid points"))
   }
 
-  #time of execution
+  # time of execution
   if (!quiet) print(paste0("... done in ", as.character(round(Sys.time() - t1, 2)), " seconds"))
   if (!quiet) print("Find the best parameters...")
 
-  #find the best
+  # find the best
   if (metric$maximize) {
     max.ind <- max.col(t(evaluations))
   } else {#minimize x ~ maximize -x
@@ -47,12 +73,30 @@ Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL,
 
   if (!quiet) print("... done !")
 
-  return(list(best.value = evaluations[[max.ind]],
-              parameters = as.list(grid[max.ind, ])))
+  # Reconstruct the result
+  res <- Evaluation(data.list, method, grid, max.ind, metric, return.res = TRUE)
+
+  return(list(metric.val  = evaluations[[max.ind]],
+              parameters  = as.list(grid[max.ind, ]),
+              method.used = method$name,
+              method.res  = res))
 }
 
 
+MetricValues <- function(tuning.result, metrics.names = NULL, ground.truth = NULL, print = T, plot = T){
 
+  metrics.list <- GetMetricInfo(metric = metrics.names)
+  l <- length(metrics.list)
+  if (length(metrics.list[[1]]) == 1){# the first element is not a metric list but the first element of the metric list i.e. its name
+    metrics.list <- list(metrics.list)
+  }
+  metrics.values <- data.frame(values = 1:l, row.names = names(metrics.list))
+  for (metric in metrics.list) {
+    metrics.values[metric$name, "values"] <- metric$Metric(tuning.result$method.res, ground.truth, plot)
+    if (print) print(paste0(metric$name, " = ", metrics.values[metric$name, "values"]))
+  }
+  return(metrics.values)
+}
 
 
 
