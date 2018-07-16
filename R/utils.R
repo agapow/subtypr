@@ -6,7 +6,7 @@
 #' @param method the name of the built-in method to be used
 #' @return a method list
 #' @export
-GetMethodInfo <- function(method = NULL){
+GetMethod <- function(method = NULL){
    load(system.file("methods", "methods.RData", package = "subtypr"))# load an object called methods.list with all methods
    if (!is.null(method)){
       keepers <- which(method == names(methods.list))
@@ -27,7 +27,7 @@ GetMethodInfo <- function(method = NULL){
 #'
 #' @return a metric list
 #' @export
-GetMetricInfo <- function(metric = NULL) {
+GetMetric <- function(metric = NULL) {
    load(system.file("metrics", "metrics.RData", package = "subtypr"))# load an object called metrics.list with all metrics
    if (!is.null(metric)){
       keepers <- which(metric == names(metrics.list))
