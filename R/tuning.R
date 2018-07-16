@@ -4,12 +4,9 @@
 
 
 Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
-  print("I'm in Evaluation")
   full.args <- as.list(base::formals(method$Func))
   full.args$data.list <- data.list
   full.args[names(as.list(grid[grid.row,]))] <- as.list(grid[grid.row,])
-  print("length = ")
-  print(length(full.args))
   res <- do.call(method$Func, full.args)
   if (return.res) {
      return(res)
@@ -18,33 +15,16 @@ Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.
 }
 
 
-Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL, parallel = TRUE, plot = FALSE, quiet = FALSE) {
+Tuning <- function(data.list, method, grid.support, metric = "asw", ground.truth = NULL, parallel = TRUE, plot = FALSE, verbose = TRUE) {
 
-  if (is.character(method)) method <- GetMethodInfo(method)
-  if (is.character(metric)) metric <- GetMetricInfo(metric)
-
-  # prepare the grid generation
-
-  # all.args <- as.list(base::formals(method$Func))
-  # all.args[names(grid.support)] <- grid.support
-  #   # remove data.list from the args
-  # i.data <- which(names(all.args) == "data.list")
-  # all.args <- all.args[-i.data]
-  # print("all.atgs = ")
-  # print(all.args)
-  # span the grid
+  if (is.character(method)) method <- GetMethod(method)
+  if (is.character(metric)) metric <- GetMetric(metric)
 
   grid <- base::expand.grid(grid.support)
   l <- dim(grid)[1]
 
-  print("grid  = ")
-  print(grid)
-
-  print("class(grid) = ")
-  print(class(grid))
-
   # because sometimes it's too long, we warn the user:
-  if (!quiet) print(paste0("Evaluation of ",l," possibilities..."))
+  if (verbose) print(paste0("Evaluation of ",l," possibilities..."))
 
   t1 <- Sys.time()
   # evaluation of every possibilities
@@ -61,8 +41,8 @@ Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL,
   }
 
   # time of execution
-  if (!quiet) print(paste0("... done in ", as.character(round(Sys.time() - t1, 2)), " seconds"))
-  if (!quiet) print("Find the best parameters...")
+  if (verbose) print(paste0("... done in ", as.character(round(Sys.time() - t1, 2)), " seconds"))
+  if (verbose) print("Find the best parameters...")
 
   # find the best
   if (metric$maximize) {
@@ -71,7 +51,7 @@ Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL,
     max.ind <- max.col(-t(evaluations))
   }
 
-  if (!quiet) print("... done !")
+  if (verbose) print("... done !")
 
   # Reconstruct the result
   res <- Evaluation(data.list, method, grid, max.ind, metric, return.res = TRUE)
@@ -85,7 +65,7 @@ Tuning <- function(data.list, method, grid.support, metric, ground.truth = NULL,
 
 MetricValues <- function(tuning.result, metrics.names = NULL, ground.truth = NULL, print = T, plot = T){
 
-  metrics.list <- GetMetricInfo(metric = metrics.names)
+  metrics.list <- GetMetric(metric = metrics.names)
   l <- length(metrics.list)
   if (length(metrics.list[[1]]) == 1){# the first element is not a metric list but the first element of the metric list i.e. its name
     metrics.list <- list(metrics.list)
