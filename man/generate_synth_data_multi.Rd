@@ -4,12 +4,24 @@
 \alias{generate_synth_data_multi}
 \title{Generate 'multi-omic' synthetic data matrices  for validation}
 \usage{
-generate_synth_data_multi(n_samples, n_layers)
+generate_synth_data_multi(type = c("gaussian", "unif", "structured"),
+  support.data.list = NULL, n_samples = NULL, n_layers = NULL,
+  n_features = NULL, separation = 2)
 }
 \arguments{
-\item{n_samples}{the number of samples (rows) for each matrix}
+\item{type}{type of data, "gaussian" is a homogeneous group of patients, made with the gaussian distribution. "structured" is made as the
+simulated data is created in 10.1021/acs.jproteome.5b00824}
+
+\item{n_samples}{the number of samples (rows)}
 
 \item{n_features}{a list of the numbers of features for each matrix}
+
+\item{separation}{adjust the separation between clusters when \code{type} = "structured".
+It's the space between the means of the normal distributions used to generate the
+structure of the synthetic data}
+}
+\value{
+'multi-omic' synthetic data matrices for validation
 }
 \description{
 For validation and testing multi-omic / integrative methods, we need

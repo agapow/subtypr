@@ -7,7 +7,7 @@
 GetMetric(metric = NULL)
 }
 \arguments{
-\item{metric}{}
+\item{metric}{the metric to be used. use names(GetMetric()) to see all the metrics available.}
 }
 \value{
 a metric list

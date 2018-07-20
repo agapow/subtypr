@@ -7,7 +7,7 @@
 GetMethod(method = NULL)
 }
 \arguments{
-\item{method}{the name of the built-in method to be used}
+\item{method}{the name of the built-in method to be used. use names(GetMethod()) to see all the methods available.}
 }
 \value{
 a method list

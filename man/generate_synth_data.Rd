@@ -2,20 +2,23 @@
 % Please edit documentation in R/generate.R
 \name{generate_synth_data}
 \alias{generate_synth_data}
-\alias{generate_synth_data}
 \title{Generate synthetic data matrix for validation}
 \usage{
-generate_synth_data(dims)
-
-generate_synth_data(dims)
+generate_synth_data(type = c("gaussian", "uniform"), dims)
 }
 \arguments{
-\item{dims}{dimensions of matrix to generate, being the number of samples and features respectively}
+\item{type}{type of synthetic data generated : "gaussian" generates a matrix
+with each patients having features with the same gaussian distribution
+and "uniform" generates a matrix with each patients having features with
+the same uniform distribution.}
 
-\item{dims}{dimensions of matrix to generate, being the number of samples and features respectively}
+\item{dims}{a vector of 2 integers, which are the dimensions of the matrix to
+be generated, being the number of samples and features respectively}
+}
+\value{
+a synthetic matrix of the type selected in \code{type}
+(gaussian by default) with dimensions \code{dims}
 }
 \description{
 Generate synthetic data matrix for validation
-
-Generate random data matrix for validation
 }
