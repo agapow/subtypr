@@ -17,7 +17,7 @@ data.list <- lapply(datasets, t)
 
 ```{r tuning.snf}
 tuning.result <- Tuning(data.list = data.list, method = "snf",
-                        grid.support = grid.support, metric = "nmi",
+                        grid.support = grid.support, metric = "completeness",
                         ground.truth = real.groundtruth, parallel = TRUE, plot = TRUE)
 ```
 
@@ -26,7 +26,7 @@ tuning.result <- Tuning(data.list = data.list, method = "snf",
 
 
 ```{r tuning.check}
-val <- MetricValues(tuning.result, metrics.names = NULL, ground.truth = real.groundtruth)
+val <- MetricValues(tuning.result, ground.truth = real.groundtruth)
 ```
 
 
@@ -36,7 +36,7 @@ val <- MetricValues(tuning.result, metrics.names = NULL, ground.truth = real.gro
 
 ```{r tuning.anf}
 
-# formals(GetMethodInfo("anf")$Func)
+# formals(GetMethod("anf")$Func)
 grid.support <- list(cluster.number = 2,
                      k.affi = 5,
                      K.fusion = 5)
@@ -47,23 +47,7 @@ tuning.result <- Tuning(data.list = data.list, method = "anf",
 
 
 ```
-```{r}
-method <- GetMethodInfo("anf")
-all.args <- as.list(base::formals(method$Func))
-all.args[names(grid.support)] <- grid.support
 
-# remove data.list from the args
-i.data <- which(names(all.args) == "data.list")
-all.args <- all.args[-i.data]
-print("all.atgs = ")
-print(all.args)
-
-# span the grid
-grid <- base::expand.grid(all.args, stringsAsFactors = )
-l <- dim(grid)[1]
-print("grid  = ")
-print(grid)
-```
 
 
 
