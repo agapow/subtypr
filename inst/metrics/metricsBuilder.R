@@ -4,14 +4,14 @@
 # generate the metrics.RData
 # so it builds the object metrics.list
 
+#### Create metrics.list ####
 
-#### Metrics building ####
 
 metrics.list <- list()
 
 
 
-# Average Silhouette Width
+#### Average Silhouette Width ####
 
 
 # for affinity matrix:
@@ -34,7 +34,7 @@ asw.affinity$maximize <- TRUE
 
 metrics.list$asw.affinity <- asw.affinity
 
-# Adjusted Rand Index
+#### Adjusted Rand Index ####
 
 ari <- list()
 ari$name <- "ari"
@@ -49,7 +49,7 @@ ari$maximize <- TRUE
 metrics.list$ari <- ari
 
 
-# Normalized Mutual Information
+#### Normalized Mutual Information ####
 
 nmi <- list()
 nmi$name <- "nmi"
@@ -63,7 +63,7 @@ nmi$maximize <- TRUE
 
 metrics.list$nmi <- nmi
 
-# Meila's variation index VI
+#### Meila's variation index VI ####
 
 meilaVI <- list()
 meilaVI$name <- "meilaVI"
@@ -78,8 +78,46 @@ meilaVI$maximize <- TRUE
 
 metrics.list$meilaVI <- meilaVI
 
+
+#### Mutual Information ####
+
+mi <- list(name = "mi", label = "Mutual Information", maximize = TRUE)
+
+
+mi$Metric <- function(res, ground.truth, plot = F) {
+  mutual_information(res$partition, ground.truth)
+}
+
+metrics.list$mi <- mi
+
+#### Homogeneity ####
+
+homogeneity <- list(name = "homogeneity", label = "Homogeneity", maximize = TRUE)
+
+homogeneity$Metric <- function(res, ground.truth, plot= F) {
+  homogeneity_completeness_vmeasure(ground.truth, res$partition)$homogeneity
+}
+
+metrics.list$homogeneity <- homogeneity
+
+#### Completeness ####
+
+completeness <- list(name = "completeness", label = "Completeness", maximize = TRUE)
+completeness$Metric <- function(res, ground.truth, plot= F) {
+  homogeneity_completeness_vmeasure(ground.truth, res$partition)$completeness
+}
+
+metrics.list$completeness <- completeness
+#### V_measure ####
+
+v_measure <- list(name = "v_measure", label = "V_measure", maximize = TRUE)
+v_measure$Metric <- function(res, ground.truth, plot= F) {
+  homogeneity_completeness_vmeasure(ground.truth, res$partition)$vmeasure
+}
+
+metrics.list$v_measure <- v_measure
+
+#### Export metrics.list ####
+
 save(... = metrics.list, file = "./inst/metrics/metrics.RData")
-
-
-
 

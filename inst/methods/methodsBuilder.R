@@ -45,10 +45,13 @@ anf$Func <- function(data.list,
                      beta.affi = 1/6,
                      K.fusion = 20,
                      weigth.fusion = NULL,
-                     type.fusion = "two-step",
+                     type.fusion = c("two-step", "one-step"),
                      alpha.fusion = c(1, 1, 0, 0, 0, 0, 0, 0),
-                     spectral.type = "rw",
+                     spectral.type = c("rw", "sym", "unnormalized"),
                      verbose.fusion = FALSE) {
+
+  type.fusion = match.arg(type.fusion)
+  spectral.type = match.arg(spectral.type)
 
   affinity.list <- lapply(data.list, function(data) ANF::affinity_matrix(D = as.matrix(dist(data)),
                                                                          k = k.affi,
