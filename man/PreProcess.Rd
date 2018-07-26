@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocessing.R
 \name{PreProcess}
 \alias{PreProcess}
-\title{Preprocess the features of a given feature matrix.}
+\title{Pre-process the features of a given feature matrix.}
 \usage{
 PreProcess(data, method = c("center", "scale"), ...)
 }
@@ -20,5 +20,6 @@ and "conditionalX" (see Details of \code{\link[caret]{preProcess}})}
 the preprocessed data.
 }
 \description{
-Using the \code{preProcess} func
+Use the \code{\link[caret]{preProcess}} function of the package caret to preprocess the data.
+Centering and scaling it by default
 }
