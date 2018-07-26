@@ -4,19 +4,24 @@
 \alias{MetricValues}
 \title{An overview of the results with all available metrics}
 \usage{
-MetricValues(tuning.result, metrics.names = NULL, ground.truth = NULL,
-  print = T, plot = T)
+MetricValues(method.result, internal.metrics = NULL, ground.truth = NULL,
+  external.metrics = NULL, print = T, plot = T)
 }
 \arguments{
-\item{tuning.result}{result from Tuning function}
+\item{method.result}{a list returned by built-in methods i.e. a list with an element \code{partition} and \code{data.returned}.
+To use directly the result of the function Tuning, use the element $method.res of the result of the tuning.}
 
-\item{metrics.names}{a character vector with the name of the values to evaluate the result. If NULL, it uses all the built-in metrics}
+\item{internal.metrics}{a character vector indicating the name of internal metrics to be used. Be careful, the internal metric used
+must correspond to the data returned by the selected method (a distance matrix? an affinity matrix?, a feature matrix? ...)}
 
-\item{ground.truth}{a factor or integer vector being a classification of the patients. It will be used with external metrics.}
+\item{ground.truth}{factor or integer vector being a classification of the patients to be used with external metrics.}
 
-\item{print}{logical, to print the values of metrics in the console.}
+\item{external.metrics}{a character vector with the name of external metrics to be used with the provided ground-truth.
+If NULL, all the external metrics are evaluated.}
 
-\item{plot}{logical, to plot silhouette graph}
+\item{print}{logical. Print or not the values of metrics in the console.}
+
+\item{plot}{logical. Plot or not silhouette graph}
 }
 \value{
 a data.frame with the value of metrics.

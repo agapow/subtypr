@@ -41,12 +41,12 @@ Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.
 #'
 #'
 #' @export
-Tuning <- function(data.list, method, grid.support, metric = "asw", ground.truth = NULL, parallel = TRUE, plot = FALSE, verbose = TRUE) {
+Tuning <- function(data.list, method, grid.support, metric = "asw.affinity", ground.truth = NULL, parallel = TRUE, plot = FALSE, verbose = TRUE) {
 
-  if (is.character(method)) method <- GetMethod(method)
-  if (is.character(metric)) metric <- GetMetric(metric)
+  if (is.character(method)) {method <- GetMethod(method)}
+  if (is.character(metric)) {metric <- GetMetric(metric)}
 
-  grid <- base::expand.grid(grid.support)
+  grid <- base::expand.grid(grid.support, stringsAsFactors = FALSE)
   l <- dim(grid)[1]
 
   # because sometimes it's too long, we warn the user:
@@ -94,34 +94,72 @@ Tuning <- function(data.list, method, grid.support, metric = "asw", ground.truth
 #' MetricValues use the result of the tuning and diagnoses it using a list of selected metric. It's useful to see how other metrics
 #'   evaluate the result tuned with only one given metric which is subject to biases.
 #'
-#' @param tuning.result a result list. From the function Tuning.
-#' @param metrics.names a character vector. with the name of the values to evaluate the result. If NULL, it uses all the built-in metrics.
+#' @param method.result a list returned by built-in methods i.e. a list with an element `partition` and `data.returned`.
+#'   To use directly the result of the function Tuning, use the element $method.res of the result of the tuning.
+#' @param internal.metrics a character vector indicating the name of internal metrics to be used. Be careful, the internal metric used
+#'   must correspond to the data returned by the selected method (a distance matrix? an affinity matrix?, a feature matrix? ...)
 #' @param ground.truth factor or integer vector being a classification of the patients to be used with external metrics.
 #' @param print logical. Print or not the values of metrics in the console.
 #' @param plot logical. Plot or not silhouette graph
 #'
+#' @param external.metrics a character vector with the name of external metrics to be used with the provided ground-truth.
+#'   If NULL, all the external metrics are evaluated.
 #'
 #' @return a data.frame with the value of metrics.
 #' @export
 #'
-#' @examples
-MetricValues <- function(tuning.result, metrics.names = NULL, ground.truth = NULL, print = T, plot = T){
+MetricValues <- function(method.result,
+                         internal.metrics = NULL,
+                         ground.truth  = NULL,
+                         external.metrics = NULL,
+                         print         = T,
+                         plot          = T) {
 
-  metrics.list <- GetMetric(metric = metrics.names)
-  l <- length(metrics.list)
-  if (length(metrics.list[[1]]) == 1){# the first element is not a metric list but the first element of the metric list i.e. its name
-    metrics.list <- list(metrics.list)
+
+  all.metrics <- GetMetric(extract = FALSE)
+  internal.metrics.list <- NULL
+  external.metrics.list <- NULL
+
+  # First select internal.metrics:
+  if (!is.null(internal.metrics)) {
+    internal.metrics.list <- all.metrics[names(all.metrics) %in% internal.metrics]
   }
-  metrics.values <- data.frame(values = 1:l, row.names = names(metrics.list))
-  for (metric in metrics.list) {
-    metrics.values[metric$name, "values"] <- metric$Metric(tuning.result$method.res, ground.truth, plot)
-    if (print) print(paste0(metric$label, " = ", metrics.values[metric$name, "values"]))
+
+  # Then select external.metrics
+  if (!is.null(external.metrics)) {
+    external.metrics.list <- all.metrics[names(all.metrics) %in% external.metrics]
+  } else {
+    # otherwise, if a ground-truth is provided, it selects all external metrics.
+    if (!is.null(ground.truth)) {
+      mask <- rep(FALSE, length(all.metrics))
+      i <- 1
+      for (metric in all.metrics) {
+        if (!metric$internal){
+          mask[i] <- TRUE
+        }
+        i <- i + 1
+      }
+      external.metrics.list <- all.metrics[mask]
+    }
   }
-  return(metrics.values)
+  #concatenate the list
+  actual.list <- do.call(c, list(internal.metrics.list, external.metrics.list))
+  l <- length(actual.list)
+  if (l == 0) {
+    stop("Neither internal metric nor ground-truth provided, please provide a ground-truth (and/) or a list of internal metrics" )
+  } else {
+    #compute the values of metrics in actual.list
+    metrics.values <- data.frame(values = 1:l, row.names = names(actual.list))
+    for (metric in actual.list) {
+      metrics.values[metric$name, "values"] <- metric$Metric(method.result, ground.truth, plot)
+      if (print) print(paste0(metric$label, " = ", metrics.values[metric$name, "values"]))
+    }
+    return(metrics.values)
+  }
 }
 
 
-
+#### OLD STUFF ####
 
 # # GridGenerator creates a list with all the possibilities in a list that are spanned by parameters.list, check the demo.Rmd to see how to set the
 # # parameters

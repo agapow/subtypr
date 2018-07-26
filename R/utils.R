@@ -3,18 +3,30 @@
 
 #' Load built-in methods
 #'
-#' @param method the name of the built-in method to be used. use names(GetMethod()) to see all the methods available.
-#' @return a method list
+#' Load the selected built-in method as a 'method list' to be used with Tuning function or directly by the user using $Func.
+#'   Use names(GetMethod()) to have a list of the built-in methods.
+#'
+#'
+#' @param method the name of the built-in method to be used.
+#' @return a 'method list'. $name is a character with the name to access the function with the GetMethod function,
+#'   $label is the complete name of the function,
+#'   $Func is the function corresponding to the method: it returns a partition of the samples and some data to use
+#'   internal metrics to validate the partition.
+#'
 #' @export
-GetMethod <- function(method = NULL){
+GetMethod <- function(method = NULL, extract = TRUE){
    load(system.file("methods", "methods.RData", package = "subtypr"))# load an object called methods.list with all methods
    if (!is.null(method)){
-      keepers <- which(method == names(methods.list))
-      methods.list <- methods.list[[keepers]]
+      keepers <- which(names(methods.list) %in% method)
+      methods.list <- methods.list[keepers]
+      if (extract) {# to return the object and not a list of one object
+        methods.list <- methods.list[[1]]
+      }
    }
    if (length(methods.list) == 0){
       stop("This method is not pre-implemented in subtypr, be careful on your typo")
    }
+
    methods.list
 }
 
@@ -23,89 +35,37 @@ GetMethod <- function(method = NULL){
 
 #' Load built-in metrics
 #'
-#' @param metric the metric to be used. use names(GetMetric()) to see all the metrics available.
+#' Load the selected built-in metric as a 'metric-list' to be used in Tuning function or directly by the user using $Metric.
+#'   Use names(GetMetric()) to have a list of all the built-in metrics.
 #'
-#' @return a metric list
+#' @param metric a character. The metric to be used.
+#'
+#' @return a metric list. $name is the name used to access the metric with GetMetric function.
+#'   $label is the full name of the metric.
+#'   $Metric is either an internal metric or external metric function and gives a score to the given partition (and some given data if
+#'   it's an internal metric).
+#'   $maximize is a logical value indicating if the score returned is best when maximized (TRUE)
+#'   or when minimized (FALSE).
 #' @export
-GetMetric <- function(metric = NULL) {
+GetMetric <- function(metric = NULL, extract = TRUE) {
    load(system.file("metrics", "metrics.RData", package = "subtypr"))# load an object called metrics.list with all metrics
    if (!is.null(metric)){
-      keepers <- which(metric == names(metrics.list))
-      metrics.list <- metrics.list[[keepers]]
+      keepers <- which(names(metrics.list) %in% metric)
+      metrics.list <- metrics.list[keepers]
+      if (extract) { # to return the object and not a list of one object
+        metrics.list <- metrics.list[[1]]
+      }
    }
    if (length(metrics.list) == 0) {
       stop("This metric is not pre-implemented in subtypr, be careful on your typo")
    }
    metrics.list
 }
-#'
 
 
-#### Some functions used for the metrics ####
-
-entropy <- function (x) {
-  # return entropy of vector, essentiallyt number of bits required to specify
-  if (length (x) == 0) {
-    return (1.0)
-  }
-
-  freq_tbl <- table (x) / length (x)
-  freq_vec <- as.vector (freq_tbl)
-  return (-sum (freq_vec * log (freq_vec)))
-}
 
 
-mutual_information <- function (x, y) {
-  # consistent with sklearn
-  vec_len <- length (x)
-  df <- data.frame (x=x, y=y)
-  cont_tbl <- table (df) / vec_len
-  freqs_x <- rowSums (cont_tbl)
-  freqs_y <- colSums (cont_tbl)
-
-  sum_xy <- 0
-  for (i in 1:nrow (cont_tbl)) {
-    for (j in 1:ncol (cont_tbl)) {
-      p_xy <- cont_tbl[i, j]
-      if (0.0 < p_xy) {
-        p_x <- freqs_x[i]
-        p_y <- freqs_y[j]
-        add_xy <- p_xy * log (p_xy / (p_x * p_y))
-        sum_xy <- sum_xy + add_xy
-      }
-    }
-  }
-
-  return (sum_xy)
-}
-
-homogeneity_completeness_vmeasure <- function (labels_true, labels_pred) {
-
-  ## Preconditions & prep:
-  stopifnot (length (labels_true) == length (labels_pred))
-  cats_true <- factor (labels_true)
-  cats_pred <- factor (labels_pred)
-
-  ## Main:
-  if (length (cats_true) == 0) {
-    return (list (homogeneity=1.0, completeness=1.0, vmeasure=1.0))
-  }
-
-  entropy_c <- entropy (cats_true)
-  entropy_k <- entropy (cats_pred)
-
-  mutual_info <- mutual_information (cats_true, cats_pred)
-
-  homogeneity <- mutual_info / ifelse (0.0 < entropy_c, entropy_c, 1.0)
-  completeness <- mutual_info / ifelse (0.0 < entropy_k, entropy_k, 1.0)
 
 
-  if ((homogeneity + completeness) == 0.0) {
-    vmeasure <- 0.0
-  } else {
-    vmeasure <- 2.0 * homogeneity * completeness / (homogeneity + completeness)
-  }
 
-  return (list (homogeneity=homogeneity, completeness=completeness, vmeasure=vmeasure))
 
-}

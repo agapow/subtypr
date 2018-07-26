@@ -4,8 +4,8 @@
 \alias{Tuning}
 \title{Tune the methods to have the best set of parameters}
 \usage{
-Tuning(data.list, method, grid.support, metric = "asw", ground.truth = NULL,
-  parallel = TRUE, plot = FALSE, verbose = TRUE)
+Tuning(data.list, method, grid.support, metric = "asw.affinity",
+  ground.truth = NULL, parallel = TRUE, plot = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{data.list}{a list of data matrices with continuous data of format samples x features (with the same number of samples).}

@@ -1,4 +1,4 @@
-# Generation of synthetic datasets for testing
+# Generation of synthetic datasets for testing methods
 
 #' Generate synthetic data
 #'
@@ -12,9 +12,8 @@
 #'   It's the space between the means of the normal distributions used to generate the
 #'   structure of the synthetic data
 #'
-#' @return
-#' @examples
-synth_based_on_data <- function(data.support,
+#' @return a list of synthetic features matrix with the same dimension than the `data.support`
+Generator_Support_based <- function(data.support,
                                 structure.type = c("basic", "moClus"),
                                 separation = 2) {
 
@@ -88,7 +87,6 @@ synth_based_on_data <- function(data.support,
 
 
 
-
 #' Generate synthetic data matrix for validation
 #'
 #' @param dims a vector of 2 integers, which are the dimensions of the matrix to
@@ -101,8 +99,7 @@ synth_based_on_data <- function(data.support,
 #'
 #' @return a synthetic matrix of the type selected in `type`
 #'   (gaussian by default) with dimensions `dims`
-#' @export
-generate_synth_data <- function(type = c("gaussian", "uniform"), dims) {
+Generator_unstructured <- function(type = c("gaussian", "uniform"), dims) {
 
   type = match.arg(type)
 
@@ -133,15 +130,15 @@ generate_synth_data <- function(type = c("gaussian", "uniform"), dims) {
 #' @param n_features a list of the numbers of features for each matrix
 #' @param type type of data, "gaussian" is a homogeneous group of patients, made with the gaussian distribution. "structured" is made as the
 #'   simulated data is created in 10.1021/acs.jproteome.5b00824
-#' @param support.data.list
-#' @param n_layers
+#' @param support.data.list a list of features matrix that are used to generate the data
+#' @param n_layers the number of layers (features matrix) to be generated
 #' @param separation adjust the separation between clusters when `type` = "structured".
 #'   It's the space between the means of the normal distributions used to generate the
 #'   structure of the synthetic data
 #'
 #' @return 'multi-omic' synthetic data matrices for validation
 #' @export
-generate_synth_data_multi <- function(type = c("gaussian", "unif", "structured"),
+GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
                                       support.data.list = NULL,
                                       n_samples = NULL, n_layers = NULL,
                                       n_features = NULL,
@@ -159,13 +156,13 @@ generate_synth_data_multi <- function(type = c("gaussian", "unif", "structured")
     }
     res <- list(data.list = data.list, permutation = NULL)
 
-    } else if (type == "unif") {
+    } else if (type == "uniform") {
       if (any(is.null(n_samples), is.null(n_layers))) {
         stop("n_sample, n_layers and n_features are all required !")
       }
       data.list <- lapply(n_features, function(h) matrix(0, n_samples, h))
       for (l in 1:n_layers) {
-        data.list[[i]] <- generate_synth_data(type = "unif",
+        data.list[[i]] <- generate_synth_data(type = "uniform",
                                               dims = dim(datalist[[i]]))
       }
       res <- list(data.list = data.list, permutation = NULL)

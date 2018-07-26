@@ -4,14 +4,20 @@
 \alias{GetMetric}
 \title{Load built-in metrics}
 \usage{
-GetMetric(metric = NULL)
+GetMetric(metric = NULL, extract = TRUE)
 }
 \arguments{
-\item{metric}{the metric to be used. use names(GetMetric()) to see all the metrics available.}
+\item{metric}{a character. The metric to be used.}
 }
 \value{
-a metric list
+a metric list. $name is the name used to access the metric with GetMetric function.
+$label is the full name of the metric.
+$Metric is either an internal metric or external metric function and gives a score to the given partition (and some given data if
+it's an internal metric).
+$maximize is a logical value indicating if the score returned is best when maximized (TRUE)
+or when minimized (FALSE).
 }
 \description{
-Load built-in metrics
+Load the selected built-in metric as a 'metric-list' to be used in Tuning function or directly by the user using $Metric.
+Use names(GetMetric()) to have a list of all the built-in metrics.
 }

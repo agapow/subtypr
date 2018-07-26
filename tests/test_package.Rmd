@@ -6,19 +6,19 @@ output: html_notebook
 
 
 ```{r setup}
-load("../data/data.RData")
+load("../data/Breast.RData")
 
 grid.support <- list(K = 5, alpha = 0.5, cluster.number = 2)
 
-data.list <- lapply(datasets, t)
+
 ```
 
 
 
 ```{r tuning.snf}
-tuning.result <- Tuning(data.list = data.list, method = "snf",
+tuning.result <- Tuning(data.list = breast.data$data.list, method = "snf",
                         grid.support = grid.support, metric = "completeness",
-                        ground.truth = real.groundtruth, parallel = TRUE, plot = TRUE)
+                        ground.truth = breast.data$partition, parallel = TRUE, plot = TRUE)
 ```
 
 
@@ -26,9 +26,9 @@ tuning.result <- Tuning(data.list = data.list, method = "snf",
 
 
 ```{r tuning.check}
-val <- MetricValues(tuning.result, ground.truth = real.groundtruth)
+val <- MetricValues(tuning.result$method.res, ground.truth = breast.data$partition, internal.metrics = "asw.affinity")
 ```
-
+  
 
 
 

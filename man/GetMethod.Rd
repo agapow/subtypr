@@ -4,14 +4,18 @@
 \alias{GetMethod}
 \title{Load built-in methods}
 \usage{
-GetMethod(method = NULL)
+GetMethod(method = NULL, extract = TRUE)
 }
 \arguments{
-\item{method}{the name of the built-in method to be used. use names(GetMethod()) to see all the methods available.}
+\item{method}{the name of the built-in method to be used.}
 }
 \value{
-a method list
+a 'method list'. $name is a character with the name to access the function with the GetMethod function,
+$label is the complete name of the function,
+$Func is the function corresponding to the method: it returns a partition of the samples and some data to use
+internal metrics to validate the partition.
 }
 \description{
-Load built-in methods
+Load the selected built-in method as a 'method list' to be used with Tuning function or directly by the user using $Func.
+Use names(GetMethod()) to have a list of the built-in methods.
 }
