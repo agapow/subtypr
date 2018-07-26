@@ -8,9 +8,8 @@
 #' @param structure.type the type of structure, "moClus" is inspired from
 #'   moCluster: Identifying Joint Patterns Across Multiple Omics Data Sets,
 #'   DOI: 10.1021/acs.jproteome.5b00824
-#' @param separation adjust the separation between clusters.
-#'   It's the space between the means of the normal distributions used to generate the
-#'   structure of the synthetic data
+#' @param separation double. The value of separation between clusters: the space between
+#'   the means of the normal distributions used to generate the structure of the synthetic data.
 #'
 #' @return a list of synthetic features matrix with the same dimension than the `data.support`
 Generator_Support_based <- function(data.support,
@@ -78,7 +77,7 @@ Generator_Support_based <- function(data.support,
 
   # TYPE 2
   } else if (type == "moClus") {
-
+    stop("not implemented yet, sorry")
 
   }
 
@@ -87,7 +86,7 @@ Generator_Support_based <- function(data.support,
 
 
 
-#' Generate synthetic data matrix for validation
+#' Generate a list of synthetic data matrix for validation
 #'
 #' @param dims a vector of 2 integers, which are the dimensions of the matrix to
 #'   be generated, being the number of samples and features respectively
@@ -96,29 +95,32 @@ Generator_Support_based <- function(data.support,
 #'   with each patients having features with the same gaussian distribution
 #'   and "uniform" generates a matrix with each patients having features with
 #'   the same uniform distribution.
+#' @param n_layers integer. The number of layers (features matrix) to be generated.
 #'
-#' @return a synthetic matrix of the type selected in `type`
-#'   (gaussian by default) with dimensions `dims`
-Generator_unstructured <- function(type = c("gaussian", "uniform"), dims) {
+#' @return a list of `n_layers` synthetic matrix of the type selected in `type`
+#'   (gaussian by default) with dimensions `dims`.
+Generator_unstructured <- function(type = c("gaussian", "uniform"), n_samples, n_features, n_layers) {
 
   type = match.arg(type)
 
-  n <- dims[1]
-  h <- dims[2]
-
-  # synthetization
-  if (type == "gaussian") {
-    data <- matrix(0, n, h)
-    for (j in 1:h) {
-      data[,j] <- rnorm(n)
+  data.list <- vector('list', n_layers)
+  for (t in 1:n_layers) {
+    h <- n_features[t]
+    # synthetization
+    if (type == "gaussian") {
+      data <- matrix(0, n_samples, h)
+      for (j in 1:h) {
+        data[,j] <- rnorm(n_samples)
+      }
+    } else if (type == "uniform") {
+      data <- matrix(0, n_samples, h)
+      for (j in 1:h) {
+        data[,j] <- runif(n_samples)
+      }
     }
-  } else if (type == "uniform") {
-    data <- matrix(0, n, h)
-    for (j in 1:h) {
-      data[,j] <- runif(n)
-    }
+    data.list[[t]] <- data
   }
-  data
+  data.list
 }
 
 
@@ -131,46 +133,42 @@ Generator_unstructured <- function(type = c("gaussian", "uniform"), dims) {
 #' @param type type of data, "gaussian" is a homogeneous group of patients, made with the gaussian distribution. "structured" is made as the
 #'   simulated data is created in 10.1021/acs.jproteome.5b00824
 #' @param support.data.list a list of features matrix that are used to generate the data
-#' @param n_layers the number of layers (features matrix) to be generated
-#' @param separation adjust the separation between clusters when `type` = "structured".
-#'   It's the space between the means of the normal distributions used to generate the
-#'   structure of the synthetic data
+#' @param n_layers integer. The number of layers (features matrix) to be generated
+#' @param separation double. The value of separation between clusters: the space between
+#'   the means of the normal distributions used to generate the structure of the synthetic data.
 #'
 #' @return 'multi-omic' synthetic data matrices for validation
 #' @export
 GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
-                                      support.data.list = NULL,
-                                      n_samples = NULL, n_layers = NULL,
-                                      n_features = NULL,
-                                      separation = 2) {
+                              n_samples = NULL,
+                              n_layers = NULL,
+                              n_features = NULL,
+                              support.data.list = NULL,
+                              separation = 2) {
   type = match.arg(type)
 
   if (type == "gaussian") {
     if (any(is.null(n_samples), is.null(n_layers))) {
-      stop("n_sample, n_layers and n_features are all required !")
+      stop("n_sample, n_layers and n_features are required for the selected (or default) generation type !")
     }
-    data.list <- lapply(n_features, function(h) matrix(0, n_samples, h))
-    for (l in 1:n_layers) {
-      data.list[[i]] <- generate_synth_data(type = "gaussian",
-                                            dims = dim(datalist[[i]]))
-    }
-    res <- list(data.list = data.list, permutation = NULL)
+    data.list <- Generator_unstructured(type = "gaussian", n_samples, n_features, n_layers)
+    res <- list(data.list = data.list, partition = NULL)
+
 
     } else if (type == "uniform") {
       if (any(is.null(n_samples), is.null(n_layers))) {
-        stop("n_sample, n_layers and n_features are all required !")
+        stop("n_sample, n_layers and n_features are required for the selected (or default) generation type !")
       }
-      data.list <- lapply(n_features, function(h) matrix(0, n_samples, h))
-      for (l in 1:n_layers) {
-        data.list[[i]] <- generate_synth_data(type = "uniform",
-                                              dims = dim(datalist[[i]]))
-      }
-      res <- list(data.list = data.list, permutation = NULL)
+      data.list <- Generator_unstructured(type = "uniform", n_samples, n_features, n_layers)
+      res <- list(data.list = data.list, partition = NULL)
+
+
 
     } else if (type == "structured") {
       if (is.null(support.data.list)) stop("support.data.list is missing !")
-      res <- synth_based_on_data(data.support = support.data.list,
-                                 structure.type = "basic", separation = separation)
+      res <- Generator_Support_based(data.support = support.data.list,
+                                     structure.type = "basic",
+                                     separation = separation)
 
     }
   res

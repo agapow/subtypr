@@ -1,4 +1,4 @@
-#tuning.R
+# Tuning of methods
 
 
 Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
@@ -22,7 +22,9 @@ Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.
 #' @param method a string being the name of the built-in method to be used or a 'method list' with the same format as the built-in ones.
 #' @param grid.support a list with a set of value for each parameter to be tuned. The typo has to be correct.
 #'   Use formals(method$Func) to know all the available parameters.
-#' @param metric a string being the name of the built-in metric to be used or a 'metric list' with the same format as the built-in ones.
+#' @param metric a string being the name of the built-in metric to be used or a 'metric list'
+#'   with the same format as the built-in ones. If the chosen metric is internal, be sure to choose a metric corresponding to the kind
+#'   of data returned by the chosen method.
 #' @param ground.truth a factor or integer vector being a classification of the patients. It will be used with external metrics.
 #' @param parallel logical, TRUE for parallel computing (default and recommanded)
 #' @param plot logical, set TRUE to plot the metric evaluation of each grid point to have an overview
