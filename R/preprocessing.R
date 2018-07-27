@@ -27,6 +27,4 @@ PreProcess <- function(data, method = c("center", "scale"), ...) {
 
 
 
-library(subtypr)
-
 
