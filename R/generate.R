@@ -5,7 +5,7 @@
 #' Generate synthetic data with a known structure based on a real dataset
 #' provided by the user
 #'
-#' @param data.support a list of features matrix that are used to generate the
+#' @param data.support a list of features matrices used to generate the
 #'   data
 #' @param structure.type the type of structure, "moClus" is inspired from
 #'   moCluster: Identifying Joint Patterns Across Multiple Omics Data Sets, DOI:
@@ -16,14 +16,17 @@
 #'
 #' @return a list of synthetic features matrix with the same dimension than the
 #'   `data.support`
-Generator_Support_based <- function(data.support,
+#'
+Generator_Support_based <- function (data.support,
                                     structure.type = c("basic", "moClus"),
                                     separation = 2) {
+  ## Preconditions & preparation:
   structure.type <- match.arg (structure.type)
 
   n_layers <- length (data.support)
   n_samples <- dim (data.support[[1]])[1] # samples in the rows
 
+  ## Main:
   # TYPE 1
   if (structure.type == "basic") {
     k <- 4 # fixed for the moment
@@ -86,12 +89,13 @@ Generator_Support_based <- function(data.support,
     stop("not implemented yet, sorry")
   }
 
-  return(list(data.list = Xgens, partition = partition.tot))
+  ## Postconditions & return:
+  return (list (data.list = Xgens, partition = partition.tot))
 }
 
 
 
-#' Generate a list of synthetic data matrix for validation
+#' Generate a list of synthetic data matrices for validation
 #'
 #' @param dims a vector of 2 integers, which are the dimensions of the matrix to
 #'   be generated, being the number of samples and features respectively
@@ -104,7 +108,8 @@ Generator_Support_based <- function(data.support,
 #'
 #' @return a list of `n_layers` synthetic matrix of the type selected in `type`
 #'   (gaussian by default) with dimensions `dims`.
-Generator_unstructured <- function(type = c("gaussian", "uniform"), n_samples, n_features, n_layers) {
+#'
+Generator_unstructured <- function (type = c("gaussian", "uniform"), n_samples, n_features, n_layers) {
   type <- match.arg(type)
 
   data.list <- vector("list", n_layers)
@@ -149,31 +154,49 @@ Generator_unstructured <- function(type = c("gaussian", "uniform"), n_samples, n
 #' @export
 GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
                               n_samples = NULL,
-                              n_layers = NULL,
                               n_features = NULL,
+                              n_layers = NULL,
                               support.data.list = NULL,
                               separation = 2) {
-  type <- match.arg(type)
+  ## Preconditions & preparation:
+  type <- match.arg (type)
 
+  ## Main:
   if (type == "gaussian") {
-    if (any(is.null(n_samples), is.null(n_layers))) {
-      stop("n_sample, n_layers and n_features are required for the selected (or default) generation type !")
-    }
-    data.list <- Generator_unstructured(type = "gaussian", n_samples, n_features, n_layers)
-    res <- list(data.list = data.list, partition = NULL)
+      assert_that (
+        ! is.null (n_samples), 2 <= n_samples,
+        ! is.null (n_features), 1 <= n_features,
+        ! is.null (n_layers), 1 <= n_layers,
+        msg='size and number of output matrices required'
+      )
+
+      data.list <- Generator_unstructured (type = "gaussian", n_samples, n_features, n_layers)
+      res <- list (data.list = data.list, partition = NULL)
+
   } else if (type == "uniform") {
-    if (any(is.null(n_samples), is.null(n_layers))) {
-      stop("n_sample, n_layers and n_features are required for the selected (or default) generation type !")
-    }
+    assert_that (
+      ! is.null (n_samples), 2 <= n_samples,
+      ! is.null (n_features), 1 <= n_features,
+      ! is.null (n_layers), 1 <= n_layers,
+      msg='size and number of output matrices required'
+    )
+
     data.list <- Generator_unstructured(type = "uniform", n_samples, n_features, n_layers)
     res <- list(data.list = data.list, partition = NULL)
+
   } else if (type == "structured") {
-    if (is.null(support.data.list)) stop("support.data.list is missing !")
+    assert_that (
+      ! is.null (support.data.list),
+      msg='support.data.list missing'
+    )
+
     res <- Generator_Support_based(
       data.support = support.data.list,
       structure.type = "basic",
       separation = separation
     )
   }
+
+  ## Postconditions & return:
   res
 }
