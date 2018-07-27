@@ -33,8 +33,7 @@ PreProcess <- function(data, method = c("center", "scale"), ...) {
   predictx
 }
 
-# NOTE: caret in turn is calling stats::predict.lm . How it works is that preprocess
-# is creating a model (!) that is used to transform the data in the second step
+# NOTE: caret is not calling stats::predict but it's own predict.preProcess.
 
 # XXX: would it be useful to have our own versions of the two-step transform
 # XXX: how do you write other transformation functions?
