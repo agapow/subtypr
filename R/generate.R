@@ -1,9 +1,6 @@
 # Generation of synthetic datasets for testing methods
 
-#' Generate synthetic data
-#'
-#' Generate synthetic data with a known structure based on a real dataset
-#' provided by the user
+#' Generate synthetic data based on a real dataset.
 #'
 #' @param data.support a list of features matrices used to generate the
 #'   data
@@ -17,7 +14,7 @@
 #' @return a list of synthetic features matrix with the same dimension than the
 #'   `data.support`
 #'
-Generator_Support_based <- function (data.support,
+generate_matrix_unstructured <- function (data.support,
                                     structure.type = c("basic", "moClus"),
                                     separation = 2) {
   ## Preconditions & preparation:
@@ -109,8 +106,8 @@ Generator_Support_based <- function (data.support,
 #' @return a list of `n_layers` synthetic matrix of the type selected in `type`
 #'   (gaussian by default) with dimensions `dims`.
 #'
-Generator_unstructured <- function (type = c("gaussian", "uniform"), n_samples, n_features, n_layers) {
-  type <- match.arg(type)
+generate_matrix_unstructured <- function (type = c("gaussian", "uniform"), n_samples, n_features, n_layers) {
+  type <- match.arg (type)
 
   data.list <- vector("list", n_layers)
   for (t in 1:n_layers) {
@@ -160,37 +157,36 @@ GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
                               separation = 2) {
   ## Preconditions & preparation:
   type <- match.arg (type)
-
-  ## Main:
-  if (type == "gaussian") {
-      assert_that (
-        ! is.null (n_samples), 2 <= n_samples,
-        ! is.null (n_features), 1 <= n_features,
-        ! is.null (n_layers), 1 <= n_layers,
-        msg='size and number of output matrices required'
-      )
-
-      data.list <- Generator_unstructured (type = "gaussian", n_samples, n_features, n_layers)
-      res <- list (data.list = data.list, partition = NULL)
-
-  } else if (type == "uniform") {
+  if (type %in% c('uniform', 'gaussian')) {
     assert_that (
       ! is.null (n_samples), 2 <= n_samples,
       ! is.null (n_features), 1 <= n_features,
       ! is.null (n_layers), 1 <= n_layers,
       msg='size and number of output matrices required'
     )
-
-    data.list <- Generator_unstructured(type = "uniform", n_samples, n_features, n_layers)
-    res <- list(data.list = data.list, partition = NULL)
-
-  } else if (type == "structured") {
+  }
+  if (type %in% c('structured')) {
     assert_that (
       ! is.null (support.data.list),
       msg='support.data.list missing'
     )
+  }
 
-    res <- Generator_Support_based(
+
+  ## Main:
+  if (type == "gaussian") {
+
+      data.list <- Generator_unstructured (type = "gaussian", n_samples, n_features, n_layers)
+      res <- list (data.list = data.list, partition = NULL)
+
+  } else if (type == "uniform") {
+
+    data.list <- generate_matrix_unstructured (type = "uniform", n_samples, n_features, n_layers)
+    res <- list (data.list = data.list, partition = NULL)
+
+  } else if (type == "structured") {
+
+    res <- Generator_Support_based (
       data.support = support.data.list,
       structure.type = "basic",
       separation = separation
