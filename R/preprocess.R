@@ -30,5 +30,3 @@ transform <- function (m, method, ...) {
    return (caret::predict (preproc, m))
 }
 
-
-# XXX: would it be useful to have our own versions of the two-step transform
