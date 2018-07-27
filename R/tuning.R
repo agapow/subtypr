@@ -1,7 +1,6 @@
 # Tuning of methods
 
-
-Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
+Evaluation <- function (data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
   full.args <- as.list(base::formals(method$Func))
   full.args$data.list <- data.list
   full.args[names(as.list(grid[grid.row,]))] <- as.list(grid[grid.row,])
@@ -15,31 +14,41 @@ Evaluation <- function(data.list, method, grid, grid.row, metric = NULL, ground.
 
 #' Tune the methods to have the best set of parameters
 #'
-#' Tuning considers a list of values of parameters (grid.support) to be tested (all the combinations are tested)
-#'   and find the set of parameters that have the best value for the metric selected.
+#' Tuning considers a list of values of parameters (grid.support) to be tested
+#' (all the combinations are tested) and find the set of parameters that have
+#' the best value for the metric selected.
 #'
-#' @param data.list a list of data matrices with continuous data of format samples x features (with the same number of samples).
-#' @param method a string being the name of the built-in method to be used or a 'method list' with the same format as the built-in ones.
-#' @param grid.support a list with a set of value for each parameter to be tuned. The typo has to be correct.
-#'   Use formals(method$Func) to know all the available parameters.
-#' @param metric a string being the name of the built-in metric to be used or a 'metric list'
-#'   with the same format as the built-in ones. If the chosen metric is internal, be sure to choose a metric corresponding to the kind
-#'   of data returned by the chosen method.
-#' @param ground.truth a factor or integer vector being a classification of the patients. It will be used with external metrics.
-#' @param parallel logical, TRUE for parallel computing (default and recommanded)
-#' @param plot logical, set TRUE to plot the metric evaluation of each grid point to have an overview
-#'   of the impact of the variation of the parameters on the value of the considered metric.
+#' @param data.list a list of data matrices with continuous data of format
+#'   samples x features (with the same number of samples).
+#' @param method a string being the name of the built-in method to be used or a
+#'   'method list' with the same format as the built-in ones.
+#' @param grid.support a list with a set of value for each parameter to be
+#'   tuned. The typo has to be correct. Use formals(method$Func) to know all the
+#'   available parameters.
+#' @param metric a string being the name of the built-in metric to be used or a
+#'   'metric list' with the same format as the built-in ones. If the chosen
+#'   metric is internal, be sure to choose a metric corresponding to the kind of
+#'   data returned by the chosen method.
+#' @param ground.truth a factor or integer vector being a classification of the
+#'   patients. It will be used with external metrics.
+#' @param parallel logical, TRUE for parallel computing (default and
+#'   recommanded)
+#' @param plot logical, set TRUE to plot the metric evaluation of each grid
+#'   point to have an overview of the impact of the variation of the parameters
+#'   on the value of the considered metric.
 #' @param verbose logical, set FALSE to avoid printing of informations
 #'
-#' @return the result list.
-#'   $metric.val contain the best value of the metric among all the grid
+#' @return the result list. $metric.val contain the best value of the metric
+#'   among all the grid
 #'
 #'   $parameters is the corresponding set of parameters
 #'
-#'   $method.used contains the name of the tuned method, to know where the result comes from.
+#'   $method.used contains the name of the tuned method, to know where the
+#'   result comes from.
 #'
-#'   $ method.res contains the result of the method, i.e. a partition and the data returned by the method,
-#'     to allow external and/or internal validation by other metrics.
+#'   $ method.res contains the result of the method, i.e. a partition and the
+#'   data returned by the method, to allow external and/or internal validation
+#'   by other metrics.
 #'
 #'
 #' @export
@@ -93,19 +102,25 @@ Tuning <- function(data.list, method, grid.support, metric = "asw.affinity", gro
 
 #' An overview of the results with all available metrics
 #'
-#' MetricValues use the result of the tuning and diagnoses it using a list of selected metric. It's useful to see how other metrics
-#'   evaluate the result tuned with only one given metric which is subject to biases.
+#' MetricValues use the result of the tuning and diagnoses it using a list of
+#' selected metric. It's useful to see how other metrics evaluate the result
+#' tuned with only one given metric which is subject to biases.
 #'
-#' @param method.result a list returned by built-in methods i.e. a list with an element `partition` and `data.returned`.
-#'   To use directly the result of the function Tuning, use the element $method.res of the result of the tuning.
-#' @param internal.metrics a character vector indicating the name of internal metrics to be used. Be careful, the internal metric used
-#'   must correspond to the data returned by the selected method (a distance matrix? an affinity matrix?, a feature matrix? ...)
-#' @param ground.truth factor or integer vector being a classification of the patients to be used with external metrics.
+#' @param method.result a list returned by built-in methods i.e. a list with an
+#'   element `partition` and `data.returned`. To use directly the result of the
+#'   function Tuning, use the element $method.res of the result of the tuning.
+#' @param internal.metrics a character vector indicating the name of internal
+#'   metrics to be used. Be careful, the internal metric used must correspond to
+#'   the data returned by the selected method (a distance matrix? an affinity
+#'   matrix?, a feature matrix? ...)
+#' @param ground.truth factor or integer vector being a classification of the
+#'   patients to be used with external metrics.
 #' @param print logical. Print or not the values of metrics in the console.
 #' @param plot logical. Plot or not silhouette graph
 #'
-#' @param external.metrics a character vector with the name of external metrics to be used with the provided ground-truth.
-#'   If NULL, all the external metrics are evaluated.
+#' @param external.metrics a character vector with the name of external metrics
+#'   to be used with the provided ground-truth. If NULL, all the external
+#'   metrics are evaluated.
 #'
 #' @return a data.frame with the value of metrics.
 #' @export
