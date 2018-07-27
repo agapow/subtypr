@@ -20,7 +20,6 @@
 #' @return the preprocessed data.
 #' @export
 #'
-#' @examples
 #'
 PreProcess <- function(m, method = c("center", "scale"), ...) {
 
@@ -29,7 +28,7 @@ PreProcess <- function(m, method = c("center", "scale"), ...) {
   preProcessx <- caret::preProcess(x = m, method = method, ...)
 
 
-  predictx <- stats::predict(preProcessx, newm = m)
+  predictx <- stats::predict(preProcessx, newdata = m)
   predictx
 }
 
