@@ -19,10 +19,10 @@
 Generator_Support_based <- function(data.support,
                                     structure.type = c("basic", "moClus"),
                                     separation = 2) {
-  structure.type <- match.arg(structure.type)
+  structure.type <- match.arg (structure.type)
 
-  n_layers <- length(data.support)
-  n_samples <- dim(data.support[[1]])[1] # samples in the rows
+  n_layers <- length (data.support)
+  n_samples <- dim (data.support[[1]])[1] # samples in the rows
 
   # TYPE 1
   if (structure.type == "basic") {
