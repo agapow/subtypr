@@ -1,0 +1,71 @@
+# Romain GUEDON
+# utils.R
+
+#' Load built-in methods
+#'
+#' Load the selected built-in method as a 'method list' to be used with Tuning function or directly by the user using $Func.
+#'   Use names(GetMethod()) to have a list of the built-in methods.
+#'
+#'
+#' @param method the name of the built-in method to be used.
+#' @return a 'method list'. $name is a character with the name to access the function with the GetMethod function,
+#'   $label is the complete name of the function,
+#'   $Func is the function corresponding to the method: it returns a partition of the samples and some data to use
+#'   internal metrics to validate the partition.
+#'
+#' @export
+GetMethod <- function(method = NULL, extract = TRUE){
+   load(system.file("methods", "methods.RData", package = "subtypr"))# load an object called methods.list with all methods
+   if (!is.null(method)){
+      keepers <- which(names(methods.list) %in% method)
+      methods.list <- methods.list[keepers]
+      if (extract) {# to return the object and not a list of one object
+        methods.list <- methods.list[[1]]
+      }
+   }
+   if (length(methods.list) == 0){
+      stop("This method is not pre-implemented in subtypr, be careful on your typo")
+   }
+
+   methods.list
+}
+
+
+
+
+#' Load built-in metrics
+#'
+#' Load the selected built-in metric as a 'metric-list' to be used in Tuning function or directly by the user using $Metric.
+#'   Use names(GetMetric()) to have a list of all the built-in metrics.
+#'
+#' @param metric a character. The metric to be used.
+#'
+#' @return a metric list. $name is the name used to access the metric with GetMetric function.
+#'   $label is the full name of the metric.
+#'   $Metric is either an internal metric or external metric function and gives a score to the given partition (and some given data if
+#'   it's an internal metric).
+#'   $maximize is a logical value indicating if the score returned is best when maximized (TRUE)
+#'   or when minimized (FALSE).
+#' @export
+GetMetric <- function(metric = NULL, extract = TRUE) {
+   load(system.file("metrics", "metrics.RData", package = "subtypr"))# load an object called metrics.list with all metrics
+   if (!is.null(metric)){
+      keepers <- which(names(metrics.list) %in% metric)
+      metrics.list <- metrics.list[keepers]
+      if (extract) { # to return the object and not a list of one object
+        metrics.list <- metrics.list[[1]]
+      }
+   }
+   if (length(metrics.list) == 0) {
+      stop("This metric is not pre-implemented in subtypr, be careful on your typo")
+   }
+   metrics.list
+}
+
+
+
+
+
+
+
+

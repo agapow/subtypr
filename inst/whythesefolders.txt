@@ -1,0 +1,4 @@
+/inst/methods will contain methods.RData containing all the methods pre-implemented 
+/inst/metrics will contain metrics.RData containing all the metrics to evaluate clusters
+
+
