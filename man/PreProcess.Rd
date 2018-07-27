@@ -12,14 +12,14 @@ PreProcess(data, method = c("center", "scale"), ...)
 \item{method}{a character vector specifying the type of processing.
 Possible values are "BoxCox", "YeoJohnson", "expoTrans", "center", "scale", "range",
 "knnImpute", "bagImpute", "medianImpute", "pca", "ica", "spatialSign", "corr", "zv", "nzv",
-and "conditionalX" (see Details of \code{\link[caret]{preProcess}})}
+and "conditionalX" (see Details in \code{\link[caret]{preProcess}}).}
 
-\item{...}{additional arguments that will be passed to \code{\link[caret]{preProcess}}}
+\item{...}{additional arguments that will be passed to \code{\link[caret]{preProcess}}.}
 }
 \value{
 the preprocessed data.
 }
 \description{
 Use the \code{\link[caret]{preProcess}} function of the package caret to preprocess the data.
-Centering and scaling it by default
+Centering and scaling it by default.
 }
