@@ -8,7 +8,7 @@
 #'
 #' @export
 #'
-DataDistribution <- function(data) {
+check_distribution <- function(data) {
   mean_features = apply(data, 2, function(x) mean(x, na.rm = TRUE))
   variance_features = apply(data, 2, function(x) var(x, na.rm = TRUE))
   MAD_features = apply(data, 2, function(x) mad(x, na.rm = TRUE))
@@ -39,7 +39,7 @@ DataDistribution <- function(data) {
 #'
 #' @export
 #'
-ClinicalBoxplot <- function(clinical.feature, partition, dot = FALSE, remove.outliers = FALSE,
+plot_clinical_features <- function(clinical.feature, partition, dot = FALSE, remove.outliers = FALSE,
                             feature.name = "clinical.feature",
                             group.name = "group") {
 
