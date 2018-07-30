@@ -11,7 +11,8 @@ methods.list <- list()
 
 pins <- list(name = "pins", label = "PINSPlus")
 formals(PINSPlus::SubtypingOmicsData)
-pins$Func <- function(data.list, )
+pins$Func <- function(data.list) {#to be continued
+}
 
 
 #### SNF ####

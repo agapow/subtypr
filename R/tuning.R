@@ -102,7 +102,7 @@ tuning <- function(data.list, method, grid.support, metric = "asw.affinity", gro
 
 #' An overview of the results with all available metrics
 #'
-#' metric_overview use the result of the tuning and diagnoses it using a list of
+#' overview_metrics use the result of the tuning and diagnoses it using a list of
 #' selected metric. It's useful to see how other metrics evaluate the result
 #' tuned with only one given metric which is subject to biases.
 #'
@@ -125,7 +125,7 @@ tuning <- function(data.list, method, grid.support, metric = "asw.affinity", gro
 #' @return a data.frame with the value of metrics.
 #' @export
 #'
-metric_overview <- function(method.result,
+overview_metrics <- function(method.result,
                          internal.metrics = NULL,
                          ground.truth  = NULL,
                          external.metrics = NULL,
