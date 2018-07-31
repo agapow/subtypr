@@ -10,14 +10,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# devtools::build_vignettes()
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
+
+## Background
 
 Precision (or personalised or stratified medicine) means giving "the right
 treatment for the right patient given at the right time". This in turn
@@ -26,68 +26,44 @@ clinical presentation (their appearance) and reflects the particular
 mechanisms underlying their disease.
 
 Typing is thus broadly a clustering and classification problem, but
-identifying and validating these subtypes can be complex. It is often
-unclear which methods work better. In the absence of ground truths, it may be unclear if they work at all. Where there are ground truths, 
-
-diff resolution split / lump
-different apis
-mulitomics
+identifying and validating these subtypes can be complex. There are many
+possible methods that could be used. It is often unclear which work better.
+In the absence of ground truths, it may be unclear if they work at all.
+Where there are ground truths, typing may not reflect those truths.
+Different methods may resolve patient clusters in different extents,
+splitting or merging. Data preparation - cleaning or normalisation - may
+be required. The newer multi-omic (integrated) methods may complicate these issues.
 
 
 ## Features
 
-This package
-presents a number of tools for improved and more consistent subtyping,
-including the generation of synthetic data and validation via internal
-measures and external ground truths. 
+This package presents a number of tools and functions for improved and more
+consistent subtyping, including:
 
-unfication
-
+* Unified and consistent interaces for subtyping practices
+* Generation of synthetic data
+* Validation via internal measures and external ground truths. 
 * Functions for quality control and preprocessing of data
 * Metrics and visualisations for assessing the results of subtyping
 * Frameworks for exploration and tuning of various parameters
 * Several well-understood datasets for testing and validating approaches
 * Access to and uniform interfaces for several popular methods
+* Functions for assessing robustness
 
 
 ## Conventions
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+We refer to a dataset that captures measurements for a set of patients as a
+*sample-feature matrix*.
 
-## Styles
+By convention, samples (patients) are the rows and features (measurements) the
+columns of this table.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+This package broadly follows the tidyverse style guide.
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
 
-## Figures
+## Simple example
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+TODO
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
