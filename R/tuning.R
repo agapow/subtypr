@@ -159,7 +159,7 @@ overview_metrics <- function(method.result,
       external.metrics.list <- all.metrics[mask]
     }
   }
-  #concatenate the list
+  # concatenate the list
   actual.list <- do.call(c, list(internal.metrics.list, external.metrics.list))
   l <- length(actual.list)
   if (l == 0) {
@@ -171,6 +171,7 @@ overview_metrics <- function(method.result,
       metrics.values[metric$name, "values"] <- metric$Metric(method.result, ground.truth, plot)
       if (print) print(paste0(metric$label, " = ", metrics.values[metric$name, "values"]))
     }
+
     return(metrics.values)
   }
 }
