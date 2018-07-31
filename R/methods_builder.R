@@ -11,7 +11,20 @@ methods.list <- list()
 
 pins <- list(name = "pins", label = "PINSPlus")
 formals(PINSPlus::SubtypingOmicsData)
-pins$Func <- function(data.list) {#to be continued
+pins$Func <- function(data.list,
+                      return_stage_2 = TRUE,
+                      kMax = 5,
+                      agreementCutoff = 0.5,
+                      verbose = T, ...) {
+
+  result <- PINSPlus::SubtypingOmicsData(dataList = data.list,
+                                         kMax = kMax,
+                                         agreementCutoff = agreementCutoff,
+                                         verbose = verbose,
+                                         ... = ...)
+
+  list(partition = if (return_stage_2) result$cluster2 else result$cluster1,
+       data.returned = NULL)
 }
 
 
