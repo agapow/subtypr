@@ -1,13 +1,16 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Robustly subtyping patients"
+author: "Paul Agapow"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Robustly subtyping patients}
   %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
   %\VignetteEncoding{UTF-8}
 ---
+
+# devtools::build_vignettes()
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -16,13 +19,38 @@ knitr::opts_chunk$set(
 )
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+Precision (or personalised or stratified medicine) means giving "the right
+treatment for the right patient given at the right time". This in turn
+requires that patients be *typed*: assigned to a class that goes beyond
+clinical presentation (their appearance) and reflects the particular
+mechanisms underlying their disease.
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+Typing is thus broadly a clustering and classification problem, but
+identifying and validating these subtypes can be complex. It is often
+unclear which methods work better. In the absence of ground truths, it may be unclear if they work at all. Where there are ground truths, 
 
-## Vignette Info
+diff resolution split / lump
+different apis
+mulitomics
+
+
+## Features
+
+This package
+presents a number of tools for improved and more consistent subtyping,
+including the generation of synthetic data and validation via internal
+measures and external ground truths. 
+
+unfication
+
+* Functions for quality control and preprocessing of data
+* Metrics and visualisations for assessing the results of subtyping
+* Frameworks for exploration and tuning of various parameters
+* Several well-understood datasets for testing and validating approaches
+* Access to and uniform interfaces for several popular methods
+
+
+## Conventions
 
 Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
 
