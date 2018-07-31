@@ -21,14 +21,14 @@
 #' @export
 #'
 #'
-PreProcess <- function(m, method = c("center", "scale"), ...) {
+pre_process <- function(m, method = c("center", "scale"), ...) {
 
   # Just wrap the caret functions preProcess and predict
 
-  preProcessx <- caret::preProcess(x = m, method = method, ...)
+  pre_processx <- caret::preProcess(x = m, method = method, ...)
 
 
-  predictx <- stats::predict(preProcessx, newdata = m)
+  predictx <- stats::predict(pre_processx, newdata = m)
   predictx
 }
 

@@ -7,6 +7,14 @@
 
 methods.list <- list()
 
+#### PINSPlus ####
+
+pins <- list(name = "pins", label = "PINSPlus")
+formals(PINSPlus::SubtypingOmicsData)
+pins$Func <- function(data.list) {#to be continued
+}
+
+
 #### SNF ####
 
 

@@ -4,17 +4,17 @@
 #' Load built-in methods
 #'
 #' Load the selected built-in method as a 'method list' to be used with Tuning function or directly by the user using $Func.
-#'   Use names(GetMethod()) to have a list of the built-in methods.
+#'   Use names(get_method()) to have a list of the built-in methods.
 #'
 #'
 #' @param method the name of the built-in method to be used.
-#' @return a 'method list'. $name is a character with the name to access the function with the GetMethod function,
+#' @return a 'method list'. $name is a character with the name to access the function with the get_method function,
 #'   $label is the complete name of the function,
 #'   $Func is the function corresponding to the method: it returns a partition of the samples and some data to use
 #'   internal metrics to validate the partition.
 #'
 #' @export
-GetMethod <- function(method = NULL, extract = TRUE){
+get_method <- function(method = NULL, extract = TRUE){
    load(system.file("methods", "methods.RData", package = "subtypr"))# load an object called methods.list with all methods
    if (!is.null(method)){
       keepers <- which(names(methods.list) %in% method)
@@ -36,18 +36,18 @@ GetMethod <- function(method = NULL, extract = TRUE){
 #' Load built-in metrics
 #'
 #' Load the selected built-in metric as a 'metric-list' to be used in Tuning function or directly by the user using $Metric.
-#'   Use names(GetMetric()) to have a list of all the built-in metrics.
+#'   Use names(get_metric()) to have a list of all the built-in metrics.
 #'
 #' @param metric a character. The metric to be used.
 #'
-#' @return a metric list. $name is the name used to access the metric with GetMetric function.
+#' @return a metric list. $name is the name used to access the metric with get_metric function.
 #'   $label is the full name of the metric.
 #'   $Metric is either an internal metric or external metric function and gives a score to the given partition (and some given data if
 #'   it's an internal metric).
 #'   $maximize is a logical value indicating if the score returned is best when maximized (TRUE)
 #'   or when minimized (FALSE).
 #' @export
-GetMetric <- function(metric = NULL, extract = TRUE) {
+get_metric <- function(metric = NULL, extract = TRUE) {
    load(system.file("metrics", "metrics.RData", package = "subtypr"))# load an object called metrics.list with all metrics
    if (!is.null(metric)){
       keepers <- which(names(metrics.list) %in% metric)

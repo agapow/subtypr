@@ -14,7 +14,7 @@
 #' @return a list of synthetic features matrix with the same dimension than the
 #'   `data.support`
 #'
-generate_matrix_unstructured <- function (data.support,
+generate_matrix_structured <- function (data.support,
                                     structure.type = c("basic", "moClus"),
                                     separation = 2) {
   ## Preconditions & preparation:
@@ -149,7 +149,7 @@ generate_matrix_unstructured <- function (type = c("gaussian", "uniform"), n_sam
 #'
 #' @return 'multi-omic' synthetic data matrices for validation
 #' @export
-GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
+generate_synth_data <- function(type = c("gaussian", "uniform", "structured"),
                               n_samples = NULL,
                               n_features = NULL,
                               n_layers = NULL,
@@ -176,7 +176,7 @@ GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
   ## Main:
   if (type == "gaussian") {
 
-      data.list <- Generator_unstructured (type = "gaussian", n_samples, n_features, n_layers)
+      data.list <- generate_matrix_unstructured (type = "gaussian", n_samples, n_features, n_layers)
       res <- list (data.list = data.list, partition = NULL)
 
   } else if (type == "uniform") {
@@ -186,7 +186,7 @@ GenerateSynthData <- function(type = c("gaussian", "uniform", "structured"),
 
   } else if (type == "structured") {
 
-    res <- Generator_Support_based (
+    res <- generate_matrix_structured (
       data.support = support.data.list,
       structure.type = "basic",
       separation = separation

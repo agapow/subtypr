@@ -1,6 +1,6 @@
-# Tuning of methods
+# tuning of methods
 
-Evaluation <- function (data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
+evaluation <- function (data.list, method, grid, grid.row, metric = NULL, ground.truth = NULL, return.res = FALSE) {
   full.args <- as.list(base::formals(method$Func))
   full.args$data.list <- data.list
   full.args[names(as.list(grid[grid.row,]))] <- as.list(grid[grid.row,])
@@ -14,7 +14,7 @@ Evaluation <- function (data.list, method, grid, grid.row, metric = NULL, ground
 
 #' Tune the methods to have the best set of parameters
 #'
-#' Tuning considers a list of values of parameters (grid.support) to be tested
+#' tuning considers a list of values of parameters (grid.support) to be tested
 #' (all the combinations are tested) and find the set of parameters that have
 #' the best value for the metric selected.
 #'
@@ -52,26 +52,26 @@ Evaluation <- function (data.list, method, grid, grid.row, metric = NULL, ground
 #'
 #'
 #' @export
-Tuning <- function(data.list, method, grid.support, metric = "asw.affinity", ground.truth = NULL, parallel = TRUE, plot = FALSE, verbose = TRUE) {
+tuning <- function(data.list, method, grid.support, metric = "asw.affinity", ground.truth = NULL, parallel = TRUE, plot = FALSE, verbose = TRUE) {
 
-  if (is.character(method)) {method <- GetMethod(method)}
-  if (is.character(metric)) {metric <- GetMetric(metric)}
+  if (is.character(method)) {method <- get_method(method)}
+  if (is.character(metric)) {metric <- get_metric(metric)}
 
   grid <- base::expand.grid(grid.support, stringsAsFactors = FALSE)
   l <- dim(grid)[1]
 
   # because sometimes it's too long, we warn the user:
-  if (verbose) print(paste0("Evaluation of ",l," possibilities..."))
+  if (verbose) print(paste0("evaluation of ",l," possibilities..."))
 
   t1 <- Sys.time()
   # evaluation of every possibilities
   if (parallel) {
     no.cores <- parallel::detectCores() - 1
     cl <- parallel::makeCluster(no.cores, type = "FORK")
-    evaluations <- parallel::parLapply(cl, 1:l, function(grid.row) Evaluation(data.list, method, grid, grid.row, metric, ground.truth))
+    evaluations <- parallel::parLapply(cl, 1:l, function(grid.row) evaluation(data.list, method, grid, grid.row, metric, ground.truth))
     parallel::stopCluster(cl)
   } else {
-    evaluations <- lapply(1:l, function(grid.row) Evaluation(data.list, method, grid, grid.row, metric, ground.truth))
+    evaluations <- lapply(1:l, function(grid.row) evaluation(data.list, method, grid, grid.row, metric, ground.truth))
   }
   if (plot) {
     plot(x = 1:l, y = evaluations, xlab = "grid points", ylab = metric$label, main = paste0(metric$label, " for all grid points"))
@@ -91,7 +91,7 @@ Tuning <- function(data.list, method, grid.support, metric = "asw.affinity", gro
   if (verbose) print("... done !")
 
   # Reconstruct the result
-  res <- Evaluation(data.list, method, grid, max.ind, metric, return.res = TRUE)
+  res <- evaluation(data.list, method, grid, max.ind, metric, return.res = TRUE)
 
   return(list(metric.val  = evaluations[[max.ind]],
               parameters  = as.list(grid[max.ind, ]),
@@ -102,13 +102,13 @@ Tuning <- function(data.list, method, grid.support, metric = "asw.affinity", gro
 
 #' An overview of the results with all available metrics
 #'
-#' MetricValues use the result of the tuning and diagnoses it using a list of
+#' overview_metrics use the result of the tuning and diagnoses it using a list of
 #' selected metric. It's useful to see how other metrics evaluate the result
 #' tuned with only one given metric which is subject to biases.
 #'
 #' @param method.result a list returned by built-in methods i.e. a list with an
 #'   element `partition` and `data.returned`. To use directly the result of the
-#'   function Tuning, use the element $method.res of the result of the tuning.
+#'   function tuning, use the element $method.res of the result of the tuning.
 #' @param internal.metrics a character vector indicating the name of internal
 #'   metrics to be used. Be careful, the internal metric used must correspond to
 #'   the data returned by the selected method (a distance matrix? an affinity
@@ -125,7 +125,7 @@ Tuning <- function(data.list, method, grid.support, metric = "asw.affinity", gro
 #' @return a data.frame with the value of metrics.
 #' @export
 #'
-MetricValues <- function(method.result,
+overview_metrics <- function(method.result,
                          internal.metrics = NULL,
                          ground.truth  = NULL,
                          external.metrics = NULL,
@@ -133,7 +133,7 @@ MetricValues <- function(method.result,
                          plot          = T) {
 
 
-  all.metrics <- GetMetric(extract = FALSE)
+  all.metrics <- get_metric(extract = FALSE)
   internal.metrics.list <- NULL
   external.metrics.list <- NULL
 
@@ -176,92 +176,3 @@ MetricValues <- function(method.result,
 }
 
 
-#### OLD STUFF ####
-
-# # GridGenerator creates a list with all the possibilities in a list that are spanned by parameters.list, check the demo.Rmd to see how to set the
-# # parameters
-# OldGridGenerator <- function(parameters.list, grid, i, current_args) {
-#
-#     rlen <- length(parameters.list)
-#     param.names <- names(parameters.list)
-#     tempList <- list()
-#     ## last parameter of the list, no need to recursively use looper function
-#     if (i == rlen) {
-#         for (param in parameters.list[[i]]) {
-#             current_args[[param.names[i]]] <- param
-#             tempList <- do.call(c, list(tempList, list(current_args)))
-#         }
-#         grid <- do.call(c, list(grid, tempList))
-#     } else {
-#         for (param in parameters.list[[i]]) {
-#             current_args[[param.names[i]]] <- param
-#             grid <- GridGenerator(parameters.list, grid, i + 1, current_args)
-#         }
-#     }
-#     return(grid)
-# }
-#
-#
-#
-# # for a given list of datasets, it computes the Func with args and evaluate the clusters with the metric
-# EvalFunc <- function(datasets, args, Func, metric, returnRes = F) {
-#     full.args <- as.list(formals(Func))
-#     full.args[["datasets"]] <- datasets  # add data to the args
-#     param.names <- names(args)
-#
-#     # add the tested values to the full.args
-#     for (i in 1:length(args)) {
-#         full.args[[param.names[i]]] <- args[[i]]
-#     }
-#     res <- do.call(Func, full.args)
-#     if (returnRes) {
-#         return(res)
-#     }
-#     eval <- metric$metric(resOfExecute = res, groundtruth = metric$groundtruth)
-#     return(eval)
-# }
-#
-#
-# # Tuning is the main function and it returns the list of arguments that had the best value of metric (e.g. NMI) among all the
-# # possibilities
-#
-#
-# OldTuning <- function(datasets, parameters.list, Func, metric, plot = F) {
-#     # Find all possibilities spanned by parameters.list
-#     grid <- list()
-#     currentArg <- list()
-#     all <- GridGenerator(parameters.list, grid, 1, currentArg)
-#     # Initiate cluster
-#     no_cores <- parallel::detectCores() - 1
-#     cl <- parallel::makeCluster(no_cores, type = "FORK")
-#
-#     # Export required variables clusterExport(cl,c('EvalFunc','calNMI'))
-#
-#     # Print the number of possibilities
-#     totalCallNumb <- length(all)
-#     print(paste0("Test of ", totalCallNumb, " possibilities. It can take a while..."))
-#
-#     # EvalFunc of all possibilities
-#     evals <- parallel::parLapply(cl, all, function(args) EvalFunc(datasets, args, Func, metric))
-#     #
-#     print("... done !")
-#     parallel::stopCluster(cl)
-#
-#     # plot
-#     if (plot) {
-#         plot(x = 1:totalCallNumb,
-#              y = evals, xlab = "indice of the corresponding set of arguments",
-#              ylab = "metric value",
-#              main = "Values of the metric for all the tested possibilities")
-#     }
-#
-#     # Choose the best
-#     if (metric$maxOrMin == "max") {
-#         i_max <- max.col(t(evals))
-#     } else {
-#         i_max <- max.col(-t(evals))
-#     }
-#     arg_max <- all[[i_max]]
-#     max <- evals[[i_max]]
-#     return(list(best.arg = arg_max, metric.value = max))
-# }
