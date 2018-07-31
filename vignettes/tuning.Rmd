@@ -1,10 +1,10 @@
 ---
-title: "Vignette Title"
+title: "Tuning parameters and data layer selection"
 author: "Vignette Author"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Tuning parameters and data layer selection}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,50 +16,33 @@ knitr::opts_chunk$set(
 )
 ```
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+## Background
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+need to tune on hyper-parameters
+not a panacea
+may also need to explore rather than just take best
 
-## Vignette Info
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+## Tuning hyper-parameters
 
-## Styles
+# XXX: are they all hyper-parameters
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
 
-## Figures
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+## Data layer selection
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
+Another and potentially important place for tuning lies in selecting which data layers to use for typing. For example, if expression, genomic, epigenomic, proteomic (etc.) matrices are available for analysis, should all be used for typing or just a subset? Different layers (modalities) will contain different information but it is unclear how often this information will be complementary and/or compatiable and how often it will reflect entirely distinct processes. Even a layer that is uninformative may lower analytical power. Initial exploration has shown that an uninformative layer may be equivalent to noise and that either may obsfucate typing unpredictably.
 
-You can enable figure captions by `fig_caption: yes` in YAML:
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
 
-## More Examples
+## Robustness ?
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+Or does this belong in metrics?
+Cross valiodation
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
 
-Also a quote using `>`:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+

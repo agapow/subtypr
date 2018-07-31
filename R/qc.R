@@ -63,4 +63,6 @@ filter_flagged_data <- function (m, flag_fxn=is.na) {
 }
 
 
+# TODO: also check in multi-omics that each matrix has same samples
+
 
