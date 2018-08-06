@@ -9,7 +9,6 @@ Description: While precision / personalised / stratified medicine requires
     subtypes can be complex. This package presents a number of tools for
     improved and consistent subtyping, including the generation of synthetic
     data and validation via internal measures and external ground truths. 
-License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports:
