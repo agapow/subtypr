@@ -34,7 +34,7 @@
 #'
 #' @seealso \code{\link[SNFtool]{SNF}},
 #'   \code{\link[SNFtool]{spectralClustering}},
-#'   \code{\link[SNFtool]{affinityMatrix}.
+#'   \code{\link[SNFtool]{affinityMatrix}}.
 #'
 #' @export
 
@@ -133,8 +133,8 @@ subtype_snf <- function(data_list,
 #'   * $affinity_fused: The fused affinity matrix returned by the function
 #'     \code{\link[ANF]{ANF}}
 #'
-#' @seealso \code{\link[ANF]{ANF}}, \code{\link[ANF]{affinity_matrix},
-#'   \code{\link[ANF]{spectral_clustering}.
+#' @seealso \code{\link[ANF]{ANF}}, \code{\link[ANF]{affinity_matrix}},
+#'   \code{\link[ANF]{spectral_clustering}}.
 #'
 #' @export
 #'
