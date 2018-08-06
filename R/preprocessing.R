@@ -1,10 +1,10 @@
-# Pre-process feature matrices before analysis.
+#' Pre-process feature matrices before analysis.
 #'
 #' Often, data must be adjusted (scaled, imputed, etc.) before it can be
 #' analysed.  This method presents a simple and consistent interface for the same.
 #'
 #' Internally this is a wrapper of the equivalent methods from the
-#' \link[caret]{caret}
+#' \href{https://cran.r-project.org/web/packages/caret/index.html}{caret}
 #' package, that simplifies and streamlines usage. Note that while it suits
 #' our purposes to have a single step to adjust the data, caret package
 #' presents this as two steps - assess preprocessing and then carry it out.
@@ -36,6 +36,3 @@ pre_process <- function(m, method = c("center", "scale"), ...) {
 
 # XXX: would it be useful to have our own versions of the two-step transform
 # XXX: how do you write other transformation functions?
-
-
-
