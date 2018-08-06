@@ -22,11 +22,13 @@ metrics_list$asw_affinity <- list(
   maximize = TRUE,
   internal = TRUE,
   metric = function(pred_partition, true_partition, data_for_metric) {
-    summary(object = silhouette_affinity(
-                     pred_partition = pred_partition,
-                     affinity_matrix = data_for_metric),
-            FUN    = mean
-            )$avg.width
+    summary(
+      object = silhouette_affinity(
+        pred_partition = pred_partition,
+        affinity_matrix = data_for_metric
+      ),
+      FUN = mean
+    )$avg.width
   }
 )
 
@@ -42,11 +44,13 @@ metrics_list$asw_distance <- list(
   maximize = TRUE,
   internal = TRUE,
   metric = function(pred_partition, true_partition, data_for_metric) {
-    summary(object = silhouette_distance(
-                     pred_partition = pred_partition,
-                     distance_matrix = data_for_metric),
-            FUN = mean
-            )$avg.width
+    summary(
+      object = silhouette_distance(
+        pred_partition = pred_partition,
+        distance_matrix = data_for_metric
+      ),
+      FUN = mean
+    )$avg.width
   }
 )
 

@@ -73,7 +73,7 @@ mutual_information <- function(pred_partition, true_partition) {
 #'
 normalized_mutual_information <- function(pred_partition, true_partition) {
   nmi <- mutual_information(pred_partition, true_partition) /
-         sqrt(entropy(pred_partition) * entropy(true_partition))
+    sqrt(entropy(pred_partition) * entropy(true_partition))
   return(max(0, nmi, na.rm = TRUE))
 }
 

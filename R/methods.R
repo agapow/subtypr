@@ -236,17 +236,16 @@ subtype_pins <- function(data_list,
     verbose = verbose,
     ... = ...
   )
-  if (minimal_return){
+  if (minimal_return) {
     list(
       partition = if (return_stage_2) result$cluster2 else result$cluster1,
       element_for_metric = NULL
-      )
+    )
   } else {
     list(
       partition = if (return_stage_2) result$cluster2 else result$cluster1,
       element_for_metric = NULL,
       data_type_result = result$dataTypeResult
-      )
-
+    )
   }
 }
