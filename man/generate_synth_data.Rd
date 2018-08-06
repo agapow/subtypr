@@ -6,12 +6,12 @@
 \usage{
 generate_synth_data(type = c("gaussian", "uniform", "structured"),
   n_samples = NULL, n_features = NULL, n_layers = NULL,
-  support.data.list = NULL, separation = 2)
+  support_data_list = NULL, separation = 2)
 }
 \arguments{
-\item{type}{type of data, "gaussian" is a homogeneous group of patients, made
-with the gaussian distribution. "structured" is made as the simulated data
-is created in 10.1021/acs.jproteome.5b00824}
+\item{type}{type of data, "gaussian" is a homogeneous group of patients,
+made with the gaussian distribution. "structured" is made as the
+simulated data is created in 10.1021/acs.jproteome.5b00824}
 
 \item{n_samples}{the number of samples (rows)}
 
@@ -20,11 +20,12 @@ is created in 10.1021/acs.jproteome.5b00824}
 \item{n_layers}{integer. The number of layers (features matrix) to be
 generated}
 
-\item{support.data.list}{a list of features matrix that are used to generate
+\item{support_data_list}{a list of features matrix that are used to generate
 the data}
 
-\item{separation}{double. The value of separation between clusters: the space
-between the means of the normal distributions used to generate the
+\item{separation}{double. The value of separation between clusters:
+the space between the means of the normal distributions used to
+generate the
 structure of the synthetic data.}
 }
 \value{

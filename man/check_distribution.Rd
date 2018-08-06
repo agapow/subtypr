@@ -10,6 +10,6 @@ check_distribution(data)
 \item{data}{a feature matrix with samples in rows and features in columns}
 }
 \description{
-The function plots the distribution of the mean, the variance and the median absolute deviation
-of the features.
+The function plots the distribution of the mean, the variance and the median
+absolute deviation of the features.
 }

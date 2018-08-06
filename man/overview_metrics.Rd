@@ -4,23 +4,23 @@
 \alias{overview_metrics}
 \title{An overview of the results with all available metrics}
 \usage{
-overview_metrics(method.result, internal.metrics = NULL,
-  ground.truth = NULL, external.metrics = NULL, print = T, plot = T)
+overview_metrics(method_result, internal_metrics = NULL,
+  true_partition = NULL, external_metrics = NULL, print = T, plot = T)
 }
 \arguments{
-\item{method.result}{a list returned by built-in methods i.e. a list with an
-element \code{partition} and \code{data.returned}. To use directly the result of the
-function tuning, use the element $method.res of the result of the tuning.}
+\item{method_result}{a list returned by built-in methods i.e. a list with an
+element \code{partition} and \code{data_returned}. To use directly the result of the
+function tuning, use the element $method_res of the result of the tuning.}
 
-\item{internal.metrics}{a character vector indicating the name of internal
+\item{internal_metrics}{a character vector indicating the name of internal
 metrics to be used. Be careful, the internal metric used must correspond to
 the data returned by the selected method (a distance matrix? an affinity
 matrix?, a feature matrix? ...)}
 
-\item{ground.truth}{factor or integer vector being a classification of the
+\item{true_partition}{factor or integer vector being a classification of the
 patients to be used with external metrics.}
 
-\item{external.metrics}{a character vector with the name of external metrics
+\item{external_metrics}{a character vector with the name of external metrics
 to be used with the provided ground-truth. If NULL, all the external
 metrics are evaluated.}
 
@@ -32,7 +32,7 @@ metrics are evaluated.}
 a data.frame with the value of metrics.
 }
 \description{
-overview_metrics use the result of the tuning and diagnoses it using a list of
-selected metric. It's useful to see how other metrics evaluate the result
-tuned with only one given metric which is subject to biases.
+overview_metrics use the result of the tuning and diagnoses it using a list
+of selected metric. It's useful to see how other metrics evaluate the
+result tuned with only one given metric which is subject to biases.
 }

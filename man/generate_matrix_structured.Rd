@@ -4,14 +4,14 @@
 \alias{generate_matrix_structured}
 \title{Generate synthetic data based on a real dataset.}
 \usage{
-generate_matrix_structured(data.support, structure.type = c("basic",
+generate_matrix_structured(data_support, structure_type = c("basic",
   "moClus"), separation = 2)
 }
 \arguments{
-\item{data.support}{a list of features matrices used to generate the
+\item{data_support}{a list of features matrices used to generate the
 data}
 
-\item{structure.type}{the type of structure, "moClus" is inspired from
+\item{structure_type}{the type of structure, "moClus" is inspired from
 moCluster: Identifying Joint Patterns Across Multiple Omics Data Sets, DOI:
 10.1021/acs.jproteome.5b00824}
 
@@ -21,7 +21,7 @@ structure of the synthetic data.}
 }
 \value{
 a list of synthetic features matrix with the same dimension than the
-\code{data.support}
+\code{data_support}
 }
 \description{
 Generate synthetic data based on a real dataset.

@@ -4,23 +4,26 @@
 \alias{plot_clinical_features}
 \title{Box-plot of clinical features for a given partition of the samples.}
 \usage{
-plot_clinical_features(clinical.feature, partition, dot = FALSE,
-  remove.outliers = FALSE, feature.name = "clinical.feature",
-  group.name = "group")
+plot_clinical_features(clinical_feature, partition, dot = FALSE,
+  remove_outliers = FALSE, feature_name = "clinical_feature",
+  group_name = "group")
 }
 \arguments{
-\item{clinical.feature}{a numeric vector with a value for each patients.}
+\item{clinical_feature}{a numeric vector with a value for each patients.}
 
-\item{partition}{an integer (or factor) vector indicating the group of each patient.}
+\item{partition}{an integer (or factor) vector indicating the group of
+each patient.}
 
 \item{dot}{logical, to plot the points on the box-plot}
 
-\item{remove.outliers}{logical, to only plot data between quantile 0.1 and 0.9 (FALSE by default)}
+\item{remove_outliers}{logical, to only plot data between quantile 0.1
+and 0.9 (FALSE by default)}
 
-\item{feature.name}{the name of the clinical feature plotted.}
+\item{feature_name}{the name of the clinical feature plotted.}
 
-\item{group.name}{the name of the group in the partition, for the plot.}
+\item{group_name}{the name of the group in the partition, for the plot.}
 }
 \description{
-Plot the box-plot of the given clinical features, splitting data according to the given partition.
+Plot the box-plot of the given clinical features, splitting data according
+to the given partition.
 }

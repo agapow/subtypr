@@ -2,8 +2,7 @@
 % Please edit documentation in R/preprocessing.R
 \name{pre_process}
 \alias{pre_process}
-\title{Often, data must be adjusted (scaled, imputed, etc.) before it can be
-analysed.  This method presents a simple and consistent interface for the same.}
+\title{Pre-process feature matrices before analysis.}
 \usage{
 pre_process(m, method = c("center", "scale"), ...)
 }
@@ -19,8 +18,12 @@ centering and scaling it by default. See \code{\link[caret]{preProcess}}.}
 the preprocessed data.
 }
 \description{
+Often, data must be adjusted (scaled, imputed, etc.) before it can be
+analysed.  This method presents a simple and consistent interface for the same.
+}
+\details{
 Internally this is a wrapper of the equivalent methods from the
-\link\link{caret}{caret}
+\href{https://cran.r-project.org/web/packages/caret/index.html}{caret}
 package, that simplifies and streamlines usage. Note that while it suits
 our purposes to have a single step to adjust the data, caret package
 presents this as two steps - assess preprocessing and then carry it out.

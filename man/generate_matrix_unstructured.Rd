@@ -13,10 +13,11 @@ with each patients having features with the same gaussian distribution
 and "uniform" generates a matrix with each patients having features with
 the same uniform distribution.}
 
-\item{n_layers}{integer. The number of layers (features matrix) to be generated.}
+\item{n_layers}{integer. The number of layers (features matrix) to
+be generated.}
 
-\item{dims}{a vector of 2 integers, which are the dimensions of the matrix to
-be generated, being the number of samples and features respectively}
+\item{dims}{a vector of 2 integers, which are the dimensions of the matrix
+to be generated, being the number of samples and features respectively}
 }
 \value{
 a list of \code{n_layers} synthetic matrix of the type selected in \code{type}
