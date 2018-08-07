@@ -4,33 +4,44 @@
 \alias{generate_synth_data}
 \title{Generate 'multi-omic' synthetic data matrices  for validation}
 \usage{
-generate_synth_data(type = c("gaussian", "uniform", "structured"),
+generate_synth_data(type = c("gaussian", "uniform", "moclus"),
   n_samples = NULL, n_features = NULL, n_layers = NULL,
-  support_data_list = NULL, separation = 2)
+  support_data_list = NULL, ...)
 }
 \arguments{
-\item{type}{type of data, "gaussian" is a homogeneous group of patients,
-made with the gaussian distribution. "structured" is made as the
-simulated data is created in 10.1021/acs.jproteome.5b00824}
+\item{type}{The type of data. See Details.}
 
-\item{n_samples}{the number of samples (rows)}
+\item{n_samples}{The number of samples of the generated data.}
 
-\item{n_features}{a list of the numbers of features for each matrix}
+\item{n_features}{A vector of integer: the numbers of features for each
+generated matrix.}
 
 \item{n_layers}{integer. The number of layers (features matrix) to be
-generated}
+generated.}
 
-\item{support_data_list}{a list of features matrix that are used to generate
-the data}
+\item{support_data_list}{A list of features matrix that are used to generate
+the structured data.}
 
-\item{separation}{double. The value of separation between clusters:
-the space between the means of the normal distributions used to
-generate the
-structure of the synthetic data.}
+\item{...}{parameters to be passed to \code{generate_multi_structured()}. See
+?generate_multi_structured.}
 }
 \value{
-'multi-omic' synthetic data matrices for validation
+'multi-omic' synthetic data matrices for validation.
 }
 \description{
-For validation and testing multi-omic / integrative methods, we need
+For validation and testing multi-omic / integrative methods, we provide
+two type of synthetic data:
+\itemize{
+\item Unstructured data with no cluster. The idea is to check the results of a
+method on data with no real structure.
+\item Artificially structured data based on a real dataset.
+}
+}
+\details{
+For unstructured type, the dimensions of the data are needed. (\code{n_samples},
+\code{n_features} and \code{n_layers}). See \code{?generate_multi_unstructured}.
+For structured type, a list of features matrix, \code{support_data_list}
+is needed as a support to generate the data. There is also special
+parameters to be set, see \code{?generate_multi_structured} for more
+information.
 }
