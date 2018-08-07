@@ -1,120 +1,253 @@
 # Generation of synthetic datasets for testing methods
 
-#' Generate synthetic data based on a real dataset.
+
+#' Generate a partitions matrix
+#'
+#' The intersection of each partition (one per line) is a partition
+#'
+#' It's used to create complementary partitions inside data type. The idea is
+#'   that this complementary partitions intersect into a global partition that
+#'   should
+#'   appear when a multi omic data integration method is used.
+#'
+#' @param n_cluster The number of cluster.
+#' @param n_samples The number of samples
+#' @param n_layers The number of layers
+#'
+#' @return a list:
+#'   * $partition_tot: the intersection of the partitions
+#'   * $partitions: a matrix with rows representing the partition for each
+#'     layer.
+#'
+generate_partitions <- function(n_samples, n_layers, n_cluster = 4) {
+
+  if (n_cluster != 4) stop("only built for n_cluster == 4")
+
+  # n_samples == group_size * n_cluster + rest_size
+  group_size <- n_samples %/% n_cluster
+  rest_size <- n_samples %% n_cluster
+
+
+  # Either type 1: 11112222 or type 2: 11221122, the first half of the data
+  # layers are type 1 and the second half is type 2:
+  layer_structure <- c(rep(1, n_layers %/% 2),
+                       rep(2, n_layers - n_layers %/% 2))
+
+  partitions <- matrix(0, n_layers, n_samples)
+  for (i in 1:n_layers) {
+    switch(layer_structure[i],
+           # case 1
+           partitions[i, ] <- c(
+             rep(1, group_size * (n_cluster / 2)),
+             rep(2, group_size * (n_cluster / 2)),
+             rep(2, rest_size)
+           ),
+           # case 2
+           partitions[i, ] <- c(
+             rep(1, group_size),
+             rep(2, group_size),
+             rep(1, group_size),
+             rep(2, group_size),
+             rep(2, rest_size)
+           )
+    )
+  }
+
+
+  # colsum is the same if they belong to the same cluster:
+  partition_tot <- colSums(partitions)
+
+  # re-scale cluster indicator from 1 to n_cluster:
+  partition_tot <- as.integer(as.factor(partition_tot))
+  list(partition_tot = partition_tot,
+       partitions = partitions)
+}
+
+
+#' Generate simulated data
+#'
+#' Generate simulated data as in 10.1021/acs.jproteome.5b00824 (DOI).
+#'
+#' Considering a partition of the samples, the data will be modified to have a
+#'   structure corresponding to this partition.
+#'
+#' @param X A feature matrix, rows are patients, columns are features.
+#'
+#' @param partition A partition of the samples.
+#'
+#' @param sd_signal The standard deviation of the signal in each cluster.
+#'
+#' @param sparse logical, to create sparsity in singular vector of Xsim.
+#'
+#' @param percent_sparsity percentage of sparsity in singular vector of Xsim.
+#'
+#' @seealso DOI: 10.1021/acs.jproteome.5b00824
+#'
+#' @return a simulated structured matrix
+#'
+generate_single_moclust <- function(X, partition, sd_signal = 0.5,
+                                    sparse = FALSE, percent_sparsity = 0.3) {
+
+  ## Preconditions & preparation
+  n_samples <- nrow(X)
+  n_features <- ncol(X)
+
+  n_cluster <- length(unique(partition))
+  partition <- as.integer(as.factor(partition))
+
+  # check
+
+
+  ## Main
+  svd_X <- svd(X)
+  d_modified <- c(svd_X$d[1],
+                  matrix(mean(svd_X$d[2:length(svd_X$d)]),
+                         1,
+                         length(svd_X$d) - 1))
+
+
+
+  # x_tilde generation:
+  x_tilde <- matrix(0, n_cluster, n_features)
+  for (c in 1:n_cluster){
+    x_tilde[c, ] <- rnorm(n_features, 0, sd_signal)
+  }
+
+  # X_sim generation:
+  X_sim <- matrix(0, n_samples, n_features)
+  for (i in 1:n_samples){
+    X_sim[i, ] <- x_tilde[partition[i], ] + rnorm(n_features)
+  }
+
+  svd_X_sim <- svd(X_sim)
+  # Sparsity ?
+  if (sparse) {
+    # no sparsity if less features than samples:
+    if (n_features >= n_samples) {
+      n_sparse <- round(n_features * percent_sparsity)
+      sparse_index <- sample(x = n_features, size = n_sparse)
+      svd_X$v[sparse_index, ] <- matrix(0, n_sparse, n_samples)
+    }
+
+  }
+
+  # Combine:
+  X_generated <- svd_X_sim$u %*% diag(d_modified) %*% t(svd_X$v)
+
+  ## Postconditions & return
+
+  X_generated
+}
+
+
+
+#' Generate simulated data
+#'
+#' Generate simulated data as in 10.1021/acs.jproteome.5b00824
+#'
+#' @param data_support a list of features matrices
+#' @param sd_signal the standard deviation of the signal in each cluster,
+#'   see 10.1021/acs.jproteome.5b00824, try 1, 0.5 or 0.2 for good to bad signal
+#'    to noise ratio
+#' @param sparse logical, to create sparsity in singular vector of Xsim,
+#'   see 10.1021/acs.jproteome.5b00824
+#'
+#' @param percent_sparsity a vector (value for each data type) indicating the
+#'   percentage of sparsity for the singular vector V of Xsim. See
+#'   10.1021/acs.jproteome.5b00824
+#'
+#' @return a list of simulated structured data, the corresponding partition
+#'   (partition_tot) and the partition per layer (partitions).
+#'
+generate_multi_moclust <- function(data_support, sd_signal = 0.5,
+                                   sparse = FALSE,
+                                   percent_sparsity) {
+
+  ## Preconditions & preparation
+  n_layers <- length(data_support)
+  n_samples <- dim(data_support[[1]])[1] # samples in the rows
+  if (isTRUE(sparse) && is.null(percent_sparsity)) {
+    stop("please provide percent_sparsity!")
+  }
+  # Partition generation:
+  partitions_list <- generate_partitions(n_samples, n_layers)
+  partition_tot <- partitions_list$partition_tot
+  partitions <- partitions_list$partitions
+
+  ## Main
+  data_generated <- vector('list', n_layers)
+  for (l in 1:n_layers){
+    data_generated[[l]] <-
+      generate_single_moclust(X = data_support[[l]],
+                              partition = partitions[l, ],
+                              sd_signal = sd_signal,
+                              sparse = sparse,
+                              percent_sparsity = percent_sparsity[l])
+  }
+
+  ## Postconditions & return
+  return(list(data_generated = data_generated,
+       partition_tot = partition_tot,
+       partitions = partitions))
+}
+
+
+
+#' Generate synthetic data based on a list of features matrics.
+#'
+#' Generate a structured list of data with 4 clusters.
+#'
+#' For the moment, only one method of generation is provided:
+#'
+#'  * "moclus" is inspired from
+#'   moCluster: Identifying Joint Patterns Across Multiple Omics Data Sets, DOI:
+#'   10.1021/acs.jproteome.5b00824. The single parameter is: sd_signal, see
+#'   the article.
 #'
 #' @param data_support a list of features matrices used to generate the
 #'   data
-#' @param structure_type the type of structure, "moClus" is inspired from
-#'   moCluster: Identifying Joint Patterns Across Multiple Omics Data Sets, DOI:
-#'   10.1021/acs.jproteome.5b00824
-#' @param separation double. The value of separation between clusters: the space
-#'   between the means of the normal distributions used to generate the
-#'   structure of the synthetic data.
-#'
+#' @param structure_type the type of structure,
+#' @param ... parameters for the method of generation. See Details.
 #' @return a list of synthetic features matrix with the same dimension than the
 #'   `data_support`
 #'
-generate_matrix_structured <- function(data_support,
-                                       structure_type = c("basic", "moClus"),
-                                       separation = 2) {
+generate_multi_structured <- function(data_support,
+                                       structure_type = c("moclus"),
+                                       ...) {
 
   ## Preconditions & preparation:
   structure_type <- match.arg(structure_type)
 
-  n_layers <- length(data_support)
-  n_samples <- dim(data_support[[1]])[1] # samples in the rows
-
   ## Main:
-  # TYPE 1
-  if (structure_type == "basic") {
-    k <- 4 # fixed for the moment
-    group_size <- n_samples %/% k
-    n_samples_sim <- group_size * k # number of patients keeped for
-    # the synthetic data
-    c <- n_layers %/% 2
-    cpt <- 2 # class per type
 
-    # partition
-    layer_structure <- c(rep(1, c), rep(2, n_layers - c))
-    partitions <- matrix(0, n_layers, n_samples_sim)
-    for (i in 1:n_layers) {
-      switch(layer_structure[i],
-        # case 1
-        partitions[i, ] <- c(
-          rep(1, group_size * (k / 2)),
-          rep(2, group_size * (k / 2))
-        ),
-        # case 2
-        partitions[i, ] <- c(
-          rep(1, group_size),
-          rep(2, group_size),
-          rep(1, group_size),
-          rep(2, group_size)
-        )
-      )
-    }
-    # colsum is the same if they belong to the same cluster:
-    partition_tot <- colSums(partitions)
-
-    # re-scale cluster indicator from 1 to k:
-    partition_tot <- as.integer(as.factor(partition_tot))
-
-
-    means <- matrix(0, n_layers, cpt)
-    for (l in 1:n_layers) {
-      means[l, ] <- sample(seq(0, (k - 1) * separation, separation), cpt)
-    }
-
-
-
-    # synthetization according to the partition and the means
-    Xgens <- vector("list", n_layers)
-    for (x in 1:n_layers) {
-      # pick randomly the correct number of samples:
-      X <- data_support[[x]][sample(n_samples_sim), ]
-
-      n_features <- dim(X)[2]
-
-      # first svd
-      svd_X <- svd(X)
-
-      Xsim <- matrix(0, n_samples_sim, n_features)
-
-      for (i in 1:n_samples_sim) {
-        Xsim[i, ] <- matrix(means[x, partitions[x, i]], 1, n_features)
-        +
-          rnorm(n_features)
-      }
-      Xgens[[x]] <- svd(Xsim)$u %*% diag(svd_X$d) %*% t(svd_X$v)
-    }
-
-    # TYPE 2
-  } else if (type == "moClus") {
-    stop("not implemented yet, sorry")
+  if (structure_type == "moclus") {
+    return(generate_multi_moclust(data_support = data_support,
+                                  ...))
   }
-
-  ## Postconditions & return:
-  return(list(data_list = Xgens, partition = partition_tot))
 }
 
 
 
 #' Generate a list of synthetic data matrices for validation
 #'
-#' @param dims a vector of 2 integers, which are the dimensions of the matrix
-#'   to be generated, being the number of samples and features respectively
+#' Generate a list of unstructured data matrices of the desired dimensions.
 #'
-#' @param type type of synthetic data generated : "gaussian" generates a matrix
-#'   with each patients having features with the same gaussian distribution
-#'   and "uniform" generates a matrix with each patients having features with
+#' Two types of distribution are available:
+#'   * "gaussian": generates a matrix with each patients having features with
+#'   the same gaussian distribution.
+#'   * "uniform" generates a matrix with each patients having features with
 #'   the same uniform distribution.
-#' @param n_layers integer. The number of layers (features matrix) to
+#'
+#' @param type type of synthetic data generated, "gaussian" or "uniform".
+#' @param n_layers The number of layers (features matrix) to
 #'   be generated.
+#' @param n_samples The number of samples.
+#' @param n_features integer vector. The number of features per layer.
 #'
-#' @return a list of `n_layers` synthetic matrix of the type selected in `type`
-#'   (gaussian by default) with dimensions `dims`.
+#' @return a list of unstructured matrix of the type selected in `type`
+#'   (gaussian by default).
 #'
-generate_matrix_unstructured <- function(type = c("gaussian", "uniform"),
+generate_multi_unstructured <- function(type = c("gaussian", "uniform"),
                                          n_samples, n_features, n_layers) {
   type <- match.arg(type)
 
