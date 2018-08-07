@@ -111,10 +111,10 @@ subtype_snf <- function(data_list,
 #'    (since they are most effective in practice).
 #'
 #' @param spectral_type choose one of three versions of graph Laplacian:
-#'   "unnormalized": unnormalized graph Laplacian matrix (`L = D - W``);
-#'   "rw": normalization closely related to random walk (`L = I - D^(-1)*W)``;
+#'   "unnormalized": unnormalized graph Laplacian matrix (L = D - W`);
+#'   "rw": normalization closely related to random walk (L = I - D^(-1)*W)`;
 #'   (default choice) "sym": normalized symmetric matrix
-#'   (`L = I - D^(-0.5) * W * D^(-0.5)``)
+#'   (L = I - D^(-0.5) * W * D^(-0.5)`)
 #'   For more information:
 #'   \url{https://www.cs.cmu.edu/~aarti/Class/10701/readings/Luxburg06_TR.pdf}
 #'
@@ -220,8 +220,19 @@ subtype_anf <- function(data_list,
 #' @param ... these arguments will be passed to PerturbationClustering
 #'   algorithm. See details for more information.
 #'
-#' @return
+#' @return a result list containing:
+#'   * $partition: The predicted partition
+#'   * $element_for_metric: The name of the element in the result list.
+#'     containing the data to be used with internal metrics.
+#'   * $dataTypeResult: A list of results for individual data type.
+#'     Each element of the list is the result of
+#'     \code\link[PINSPlus]{PerturbationClustering}
+#'     for the corresponding data matrix provided in dataList.
+#'
 #' @export
+#'
+#' @seealso \code\link[PINSPlus]{PerturbationClustering},
+#'   \code\link[PINSPlus]{SubtypingOmicsData}.
 #'
 subtype_pins <- function(data_list,
                          minimal_return = FALSE,

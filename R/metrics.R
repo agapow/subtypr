@@ -131,18 +131,24 @@ homogeneity_completeness_vmeasure <- function(pred_partition, true_partition) {
 
 #' Classic silhouette index for distance matrix
 #'
-#' @param pred_partition partition predicted by a method
+#' @param pred_partition partition predicted by a method, an integer vector
 #' @param distance_matrix a distance matrix
 #'
 #' @return a silhouette object
 #' @seealso \code{\link[cluster]{silhouette}}
 #' @export
 #'
-silhouette_distance <- function(pred_partition, distance_matrix) {
-  cluster::silhouette(
+silhouette_distance <- function(pred_partition, distance_matrix, average = FALSE) {
+  pred_partition <- as.integer(pred_partition)
+  silx <- cluster::silhouette(
     x = pred_partition,
     dmatrix = distance_matrix
   )
+  if (average) {
+    summary(silx)$avg.width
+  } else {
+    silx
+  }
 }
 
 
@@ -154,20 +160,25 @@ silhouette_distance <- function(pred_partition, distance_matrix) {
 #' @return a silhouette object
 #' @export
 #'
-silhouette_affinity <- function(pred_partition, affinity_matrix) {
+silhouette_affinity <- function(pred_partition, affinity_matrix, average = FALSE) {
 
   ## Preconditions & prepatation
+
+  # formating affinity_matrix:
   affinity_matrix <- as.matrix(affinity_matrix)
   affinity_matrix <- (affinity_matrix + t(affinity_matrix)) / 2
   diag(affinity_matrix) <- 0
   normalize <- function(X) X / rowSums(X)
   affinity_matrix <- normalize(affinity_matrix)
-  n <- length(pred_partition)
-  if (!all(pred_partition == round(pred_partition))) {
-    stop("'pred_partition' must only have integer codes")
-  }
-  cluster_id <- sort(unique(pred_partition <- as.integer(pred_partition)))
+
+  # formating and checking pred_partition
+  pred_partition <- as.integer(pred_partition)
+
+  cluster_id <- sort(unique(pred_partition))
+
   k <- length(cluster_id)
+  n <- length(pred_partition)
+
   if (k <= 1 || k >= n) {
     return(NA)
   }
@@ -208,7 +219,11 @@ silhouette_affinity <- function(pred_partition, affinity_matrix) {
   ## Postconditions & return
   attr(wds, "Ordered") <- FALSE
   class(wds) <- "silhouette"
-  wds
+  if (average) {
+    summary(wds)$avg.width
+  } else {
+    wds
+  }
 }
 
 #' Adjusted rand index
