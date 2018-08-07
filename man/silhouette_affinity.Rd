@@ -4,7 +4,7 @@
 \alias{silhouette_affinity}
 \title{Silhouette index for affinity matrix}
 \usage{
-silhouette_affinity(pred_partition, affinity_matrix)
+silhouette_affinity(pred_partition, affinity_matrix, average = FALSE)
 }
 \arguments{
 \item{pred_partition}{partition predicted by a method}

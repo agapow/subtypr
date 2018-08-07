@@ -4,10 +4,10 @@
 \alias{silhouette_distance}
 \title{Classic silhouette index for distance matrix}
 \usage{
-silhouette_distance(pred_partition, distance_matrix)
+silhouette_distance(pred_partition, distance_matrix, average = FALSE)
 }
 \arguments{
-\item{pred_partition}{partition predicted by a method}
+\item{pred_partition}{partition predicted by a method, an integer vector}
 
 \item{distance_matrix}{a distance matrix}
 }

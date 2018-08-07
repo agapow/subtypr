@@ -24,8 +24,8 @@ the cox p-value (if return or no_plot is TRUE).
 }
 \description{
 Plots the survival curves and compute the Cox p-value using the package
-\href{https://cran.r-project.org/web/packages/survival/index.html}
-{survival}.
+\href{https://cran.r-project.org/web/
+packages/survival/index.html}{survival}.
 }
 \seealso{
 \code{\link[survival]{Surv}}, \code{\link[survival]{coxph}}

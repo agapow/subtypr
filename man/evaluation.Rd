@@ -5,7 +5,7 @@
 \title{Evaluate parameters}
 \usage{
 evaluation(data_list, method, grid, grid_row, metric = NULL,
-  true_partition = NULL, return_res = FALSE)
+  true_partition = NULL, return_metric = TRUE)
 }
 \arguments{
 \item{data_list}{a list of data matrices with continuous data of format
@@ -26,10 +26,10 @@ data returned by the chosen method.}
 \item{true_partition}{a factor or integer vector being a classification of the
 patients. It will be used with external metrics.}
 
-\item{return_res}{logical. To return the result of the method instead of the value of the metric.}
+\item{return_metric}{logical. To return the result of the method instead of the value of the metric.}
 }
 \value{
-the value of the metric or the result of the method if \code{return_res} is TRUE
+the value of the metric or the result of the method if \code{return_metric} is TRUE
 }
 \description{
 Evaluate a set of parameters for a given method with a given metric.

@@ -30,6 +30,18 @@ respectively.}
 \item{...}{these arguments will be passed to PerturbationClustering
 algorithm. See details for more information.}
 }
+\value{
+a result list containing:
+\itemize{
+\item $partition: The predicted partition
+\item $element_for_metric: The name of the element in the result list.
+containing the data to be used with internal metrics.
+\item $dataTypeResult: A list of results for individual data type.
+Each element of the list is the result of
+\code\link\link{PINSPlus}{PerturbationClustering}
+for the corresponding data matrix provided in dataList.
+}
+}
 \description{
 Perform subtyping using multiple types of data
 }
@@ -52,4 +64,8 @@ that agrees the most with individual data types.
 is a strong agreement between data types, or if the subtyping in Stage I
 is very unbalanced.
 }
+}
+\seealso{
+\code\link\link{PINSPlus}{PerturbationClustering},
+\code\link\link{PINSPlus}{SubtypingOmicsData}.
 }

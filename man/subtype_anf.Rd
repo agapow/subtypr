@@ -49,7 +49,9 @@ Default value: (1, 1, 0, 0, 0, 0, 0, 0), i.e., only use the first two terms
 (since they are most effective in practice).}
 
 \item{spectral_type}{choose one of three versions of graph Laplacian:
-"unnormalized": unnormalized graph Laplacian matrix (\code{L = D - W``); "rw": normalization closely related to random walk (}L = I - D^(-1)*W)\code{; (default choice) "sym": normalized symmetric matrix (`L = I - D^(-0.5) * W * D^(-0.5)})
+"unnormalized": unnormalized graph Laplacian matrix (L = D - W\code{); "rw": normalization closely related to random walk (L = I - D^(-1)*W)};
+(default choice) "sym": normalized symmetric matrix
+(L = I - D^(-0.5) * W * D^(-0.5)`)
 For more information:
 \url{https://www.cs.cmu.edu/~aarti/Class/10701/readings/Luxburg06_TR.pdf}}
 
