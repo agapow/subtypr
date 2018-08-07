@@ -23,14 +23,14 @@
 #'
 #' @param grid_row the row indicating the set of parameters to be tested in the grid
 
-#' @param return_res logical. To return the result of the method instead of the value of the metric.
+#' @param return_metric logical. To return the result of the method instead of the value of the metric.
 #'
-#' @return the value of the metric or the result of the method if `return_res` is TRUE
+#' @return the value of the metric or the result of the method if `return_metric` is TRUE
 #'
 evaluation <- function(data_list, method, grid, grid_row,
                        metric = NULL,
                        true_partition = NULL,
-                       return_res = FALSE) {
+                       return_metric = TRUE) {
 
   ## Preconditions & preparation:
   # get all the args from the method:
@@ -42,12 +42,15 @@ evaluation <- function(data_list, method, grid, grid_row,
   # add the args of the grid:
   full_args[colnames(grid)] <- as.list(grid[grid_row, ])
 
+  if (return_metric){
+    full_args$minimal_return <- TRUE
+  }
   ## Main
   res <- do.call(method, full_args)
 
   ## Postconditions & return
 
-  if (return_res) {
+  if (!return_metric) {
     res
   } else {
     metric$metric(
