@@ -3,18 +3,15 @@
 
 #' Generate a partitions matrix
 #'
-#' The intersection of each partition (one per line) is a partition
+#' Used in generate_multi_structured methods to create partitions for each
+#'   layer. The intersection of these partitions are a global partition.
 #'
-#' It's used to create complementary partitions inside data type. The idea is
-#'   that this complementary partitions intersect into a global partition that
-#'   should
-#'   appear when a multi omic data integration method is used.
 #'
 #' @param n_cluster The number of cluster.
 #' @param n_samples The number of samples
 #' @param n_layers The number of layers
 #'
-#' @return a list:
+#' @return A list:
 #'   * $partition_tot: the intersection of the partitions
 #'   * $partitions: a matrix with rows representing the partition for each
 #'     layer.
@@ -79,11 +76,11 @@ generate_partitions <- function(n_samples, n_layers, n_cluster = 4) {
 #'
 #' @param sparse logical, to create sparsity in singular vector of Xsim.
 #'
-#' @param percent_sparsity percentage of sparsity in singular vector of Xsim.
+#' @param percent_sparsity Percentage of sparsity in singular vector of Xsim.
 #'
 #' @seealso DOI: 10.1021/acs.jproteome.5b00824
 #'
-#' @return a simulated structured matrix
+#' @return A simulated structured matrix
 #'
 generate_single_moclust <- function(X, partition, sd_signal = 0.5,
                                     sparse = FALSE, percent_sparsity = 0.3) {
@@ -146,6 +143,7 @@ generate_single_moclust <- function(X, partition, sd_signal = 0.5,
 #' Generate simulated data as in 10.1021/acs.jproteome.5b00824
 #'
 #' @param data_support a list of features matrices
+#'
 #' @param sd_signal the standard deviation of the signal in each cluster,
 #'   see 10.1021/acs.jproteome.5b00824, try 1, 0.5 or 0.2 for good to bad signal
 #'    to noise ratio
@@ -201,14 +199,16 @@ generate_multi_moclust <- function(data_support, sd_signal = 0.5,
 #'
 #'  * "moclus" is inspired from
 #'   moCluster: Identifying Joint Patterns Across Multiple Omics Data Sets, DOI:
-#'   10.1021/acs.jproteome.5b00824. The single parameter is: sd_signal, see
-#'   the article.
+#'   10.1021/acs.jproteome.5b00824. The single parameter is: sd_signal which is
+#'   the standard deviation of the signal used for the creation of the
+#'   structure. Default value is 1. The higher sd_signal is, the higher the
+#'   signal to noise ratio is. See the article for more information.
 #'
-#' @param data_support a list of features matrices used to generate the
+#' @param data_support A list of features matrices used to generate the
 #'   data
-#' @param structure_type the type of structure,
-#' @param ... parameters for the method of generation. See Details.
-#' @return a list of synthetic features matrix with the same dimension than the
+#' @param structure_type The type of structure: "moclus" only.
+#' @param ... Parameters for the method of generation. See Details.
+#' @return A list of synthetic features matrix with the same dimension than the
 #'   `data_support`
 #'
 generate_multi_structured <- function(data_support,
@@ -233,12 +233,12 @@ generate_multi_structured <- function(data_support,
 #' Generate a list of unstructured data matrices of the desired dimensions.
 #'
 #' Two types of distribution are available:
-#'   * "gaussian": generates a matrix with each patients having features with
+#'   * "gaussian": generates a matrix with each patient having features with
 #'   the same gaussian distribution.
-#'   * "uniform" generates a matrix with each patients having features with
+#'   * "uniform" generates a matrix with each patient having features with
 #'   the same uniform distribution.
 #'
-#' @param type type of synthetic data generated, "gaussian" or "uniform".
+#' @param type The type of synthetic data generated, "gaussian" or "uniform".
 #' @param n_layers The number of layers (features matrix) to
 #'   be generated.
 #' @param n_samples The number of samples.
@@ -256,17 +256,10 @@ generate_multi_unstructured <- function(type = c("gaussian", "uniform"),
     h <- n_features[t]
     # synthetization
     if (type == "gaussian") {
-      data <- matrix(0, n_samples, h)
-      for (j in 1:h) {
-        data[, j] <- rnorm(n_samples)
-      }
+      data_list[[t]] <- matrix(rnorm(n_samples*h), n_samples, h)
     } else if (type == "uniform") {
-      data <- matrix(0, n_samples, h)
-      for (j in 1:h) {
-        data[, j] <- runif(n_samples)
-      }
+      data_list[[t]] <- matrix(runif(n_samples*h), n_samples, h)
     }
-    data_list[[t]] <- data
   }
   data_list
 }
@@ -274,36 +267,48 @@ generate_multi_unstructured <- function(type = c("gaussian", "uniform"),
 
 #' Generate 'multi-omic' synthetic data matrices  for validation
 #'
-#' For validation and testing multi-omic / integrative methods, we need
+#' For validation and testing multi-omic / integrative methods, we provide
+#'   two type of synthetic data:
+#'  * Unstructured data with no cluster. The idea is to check the results of a
+#'    method on data with no real structure.
+#'  * Artificially structured data based on a real dataset.
 #'
-#' @param n_samples  the number of samples (rows)
+#' For unstructured type, the dimensions of the data are needed. (`n_samples`,
+#'  `n_features` and `n_layers`). See `?generate_multi_unstructured`.
+#' For structured type, a list of features matrix, `support_data_list`
+#'   is needed as a support to generate the data. There is also special
+#'   parameters to be set, see `?generate_multi_structured` for more
+#'   information.
 #'
-#' @param n_features a list of the numbers of features for each matrix
 #'
-#' @param type type of data, "gaussian" is a homogeneous group of patients,
-#'   made with the gaussian distribution. "structured" is made as the
-#'   simulated data is created in 10.1021/acs.jproteome.5b00824
 #'
-#' @param support_data_list a list of features matrix that are used to generate
-#'   the data
+#' @param n_samples  The number of samples of the generated data.
+#'
+#' @param n_features A vector of integer: the numbers of features for each
+#'   generated matrix.
+#'
+#' @param type The type of data. See Details.
+#'
+#' @param support_data_list A list of features matrix that are used to generate
+#'   the structured data.
 #'
 #' @param n_layers integer. The number of layers (features matrix) to be
-#'   generated
+#'   generated.
 #'
-#' @param separation double. The value of separation between clusters:
-#'   the space between the means of the normal distributions used to
-#'   generate the
-#'   structure of the synthetic data.
+#' @param ... parameters to be passed to `generate_multi_structured()`. See
+#'   ?generate_multi_structured.
 #'
-#' @return 'multi-omic' synthetic data matrices for validation
+#' @return 'multi-omic' synthetic data matrices for validation.
 #'
 #' @export
-generate_synth_data <- function(type = c("gaussian", "uniform", "structured"),
+generate_synth_data <- function(type = c("gaussian",
+                                         "uniform",
+                                         "moclus"),
                                 n_samples = NULL,
                                 n_features = NULL,
                                 n_layers = NULL,
                                 support_data_list = NULL,
-                                separation = 2) {
+                                ...) {
   ## Preconditions & preparation:
   type <- match.arg(type)
   if (type %in% c("uniform", "gaussian")) {
@@ -314,7 +319,7 @@ generate_synth_data <- function(type = c("gaussian", "uniform", "structured"),
       msg = "size and number of output matrices required"
     )
   }
-  if (type %in% c("structured")) {
+  if (type %in% c("moclus")) {
     assert_that(
       !is.null(support_data_list),
       msg = "support_data_list missing"
@@ -328,22 +333,20 @@ generate_synth_data <- function(type = c("gaussian", "uniform", "structured"),
       type = "gaussian",
       n_samples, n_features, n_layers
     )
-
-    res <- list(data_list = data_list, partition = NULL)
+    res <- list(data_generated = data_list)
   } else if (type == "uniform") {
     data_list <- generate_matrix_unstructured(
       type = "uniform",
       n_samples, n_features, n_layers
     )
-    res <- list(data_list = data_list, partition = NULL)
-  } else if (type == "structured") {
+    res <- list(data_generated = data_list)
+  } else if (type == "moclus") {
     res <- generate_matrix_structured(
       data_support = support_data_list,
-      structure_type = "basic",
-      separation = separation
+      structure_type = "moclus",
+      ...
     )
   }
-
   ## Postconditions & return:
   res
 }
