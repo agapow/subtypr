@@ -13,8 +13,8 @@ validate_internal <- function(labels_internal, labels_external) {
 #' Plots the survival curves and compute the Cox p-value
 #'
 #' Plots the survival curves and compute the Cox p-value using the package
-#'   \href{https://cran.r-project.org/web/packages/survival/index.html}
-#'   {survival}.
+#'   \href{https://cran.r-project.org/web/
+#'         packages/survival/index.html}{survival}.
 #'
 #'
 #'
@@ -24,7 +24,6 @@ validate_internal <- function(labels_internal, labels_external) {
 #' @param return logical, TRUE to return the cox p-value
 #' @param no_plot logical, set to TRUE to avoid plotting and return
 #'   the cox p-value.
-#'
 #' @return the cox p-value (if return or no_plot is TRUE).
 #'
 #' @seealso \code{\link[survival]{Surv}}, \code{\link[survival]{coxph}}
@@ -104,11 +103,4 @@ analyze_survival <- function(survival_time,
   }
 }
 
-## Tests --------------
 
-#
-# load("/data/data_for_review/COAD/COAD_ProcessedData.RData")
-#
-# partition <- c(1,2,3,4,rep(11, 69), rep(12, 73))
-#
-# analyze_survival(survival$Survival, survival$Death, partition)
