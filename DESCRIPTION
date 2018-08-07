@@ -12,7 +12,9 @@ Description: While precision / personalised / stratified medicine requires
 Encoding: UTF-8
 LazyData: true
 Imports:
-    devtools
+    devtools,
+Depends:
+    cluster
 Suggests: 
     knitr,
     rmarkdown,
