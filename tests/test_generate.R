@@ -9,7 +9,7 @@ for (i in 1:3){
   plot(partitions$partitions[i, ])
 }
 
-sv
+
 for (i in 1:3){
   print(dim(svd(breast_cancer_data$data_list[[2]])[[i]]))
 }
@@ -34,6 +34,6 @@ check_distribution(breast_cancer_data$data_list[[1]])
 snfx <- snf(data_list = multi$data_generated, cluster_number = 4, K = 10, alpha = 0.3, t = 10)
 
 
-SNFtool::displayClusters(snfx$affinity_fused, snfx$partition)
+plot_affinity_matrix(snfx$affinity_fused, snfx$partition)
 
 normalized_mutual_information(snfx$partition, multi$partition_tot)
