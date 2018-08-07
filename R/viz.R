@@ -89,3 +89,26 @@ plot_clinical_features <- function(clinical_feature, partition,
   m <- m + ggplot2::scale_color_brewer(palette = "Pastel1")
   plot(m, xlab = feature_name, ylab = group_name)
 }
+
+
+#' Plot clustered affinity matrix
+#'
+#' To be used with SNF and ANF affinity matrices for example.
+#'
+#' @param affinity_matrix An affinity matrix.
+#' @param partition A partition of the samples.
+#'
+#' @export
+#'
+plot_affinity_matrix <- function(affinity_matrix, partition){
+  # Reorder the distance matrix according to the partition:
+  ind <- sort(as.vector(partition), index.return = TRUE)
+  ind <- ind$ix
+  # Normalize for a good display:
+  diag(affinity_matrix) <- 0
+  affinity_matrix <- affinity_matrix/rowSums(affinity_matrix)
+  # Plot:
+  image(1:ncol(affinity_matrix), 1:nrow(affinity_matrix),
+        affinity_matrix[ind, ind], col = grey(100:0/100),
+        xlab = "Samples", ylab = "Samples")
+}
