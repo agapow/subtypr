@@ -159,22 +159,28 @@ tuning <- function(data_list, method, grid_support, metric,
       cl = cl,
       X = 1:l,
       fun = function(grid_row) evaluation(
-          data_list, method,
-          grid, grid_row,
-          metric, true_partition
+          data_list = data_list,
+          method = method,
+          grid = grid,
+          grid_row = grid_row,
+          metric = metric,
+          true_partition = true_partition,
+          return_metric = TRUE
         )
     ))
 
 
-
-
-    # end
     parallel::stopCluster(cl)
   } else {
     execution_time <- system.time(
       evaluations <- lapply(1:l, function(grid_row) evaluation(
-          data_list, method, grid,
-          grid_row, metric, true_partition
+        data_list = data_list,
+        method = method,
+        grid = grid,
+        grid_row = grid_row,
+        metric = metric,
+        true_partition = true_partition,
+        return_metric = TRUE
         ))
     )
   }
