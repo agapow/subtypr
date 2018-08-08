@@ -4,10 +4,15 @@
 \alias{check_distribution}
 \title{Plot the distribution of the features}
 \usage{
-check_distribution(data)
+check_distribution(data, thickness = 0.1, split_figures = FALSE)
 }
 \arguments{
 \item{data}{a feature matrix with samples in rows and features in columns}
+
+\item{thickness}{numeric, to adjust the size of the bins:
+#bins = #features * thickness}
+
+\item{split_figures}{logical, to have all the plot on three different plot.}
 }
 \description{
 The function plots the distribution of the mean, the variance and the median

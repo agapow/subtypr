@@ -38,7 +38,7 @@ a result list containing:
 containing the data to be used with internal metrics.
 \item $dataTypeResult: A list of results for individual data type.
 Each element of the list is the result of
-\code\link\link{PINSPlus}{PerturbationClustering}
+\code{\link[PINSPlus]{PerturbationClustering}}
 for the corresponding data matrix provided in dataList.
 }
 }
@@ -66,6 +66,6 @@ is very unbalanced.
 }
 }
 \seealso{
-\code\link\link{PINSPlus}{PerturbationClustering},
-\code\link\link{PINSPlus}{SubtypingOmicsData}.
+\code{\link[PINSPlus]{PerturbationClustering}},
+\code{\link[PINSPlus]{SubtypingOmicsData}}.
 }
