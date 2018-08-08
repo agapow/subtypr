@@ -22,7 +22,7 @@ fusion and for the computation of the affinity matrix (same parameter for
 both process).}
 
 \item{alpha}{Variance for the local model (for the Gaussian kernel of the
-affinity matrix).}
+affinity matrix). Recommended values are between 0.3 and 0.8.}
 
 \item{t}{Number of iterations for the diffusion process.}
 
