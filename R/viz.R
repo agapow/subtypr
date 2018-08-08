@@ -5,25 +5,31 @@
 #'
 #'
 #' @param data a feature matrix with samples in rows and features in columns
+#' @param thickness numeric, to adjust the size of the bins:
+#'   #bins = #features * thickness
+#' @param split_figures logical, to have all the plot on three different plot.
 #'
 #' @export
 #'
-check_distribution <- function(data) {
+check_distribution <- function(data, thickness = 0.1, split_figures = FALSE) {
   mean_features <- apply(data, 2, function(x) mean(x, na.rm = TRUE))
   variance_features <- apply(data, 2, function(x) var(x, na.rm = TRUE))
   MAD_features <- apply(data, 2, function(x) mad(x, na.rm = TRUE))
-  feature_num <- ncol(data)
-  par(mfrow = c(3, 1))
+  n_features <- ncol(data)
+  if (!split_figures) par(mfrow = c(3, 1))
   hist(mean_features,
-    breaks = feature_num * 0.1, col = "red",
+    breaks = n_features * thickness,
+    col = "red",
     main = "data (mean) distribution", xlab = "Average value of features"
   )
   hist(variance_features,
-    breaks = feature_num * 0.1, col = "red",
+    breaks = n_features * thickness,
+    col = "red",
     main = "data (Variance) distribution", xlab = "Variance of features"
   )
   hist(MAD_features,
-    breaks = feature_num * 0.1, col = "red",
+    breaks = n_features * thickness,
+    col = "red",
     main = "data (MAD) distribution",
     xlab = "Median absolute deviation of features"
   )
