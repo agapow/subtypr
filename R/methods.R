@@ -14,7 +14,7 @@
 #'   both process).
 #'
 #' @param alpha Variance for the local model (for the Gaussian kernel of the
-#'   affinity matrix).
+#'   affinity matrix). Recommended values are between 0.3 and 0.8.
 #'
 #' @param t Number of iterations for the diffusion process.
 #'
@@ -45,10 +45,15 @@ subtype_snf <- function(data_list,
                         alpha = 0.5,
                         t = 20,
                         spectral_clust_type = 3) {
+
+
+  ## Main:
+
   # SNF process
   affinity_fused <- SNFtool::SNF(
     Wall = lapply(
-      lapply(data_list, function(data) SNFtool::dist2(data, data)),
+      lapply(data_list, function(data) SNFtool::dist2(as.matrix(data),
+                                                        as.matrix(data))),
       function(dist) SNFtool::affinityMatrix(
           diff = dist,
           K = K,
