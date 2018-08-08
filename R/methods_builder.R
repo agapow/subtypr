@@ -6,9 +6,9 @@
 #### Methods building ####
 
 methods_list <- list(
-  pins = subtype_pins,
-  anf = subtype_anf,
-  snf = subtype_snf
+  subtype_pins = subtype_pins,
+  subtype_anf = subtype_anf,
+  subtype_snf = subtype_snf
 )
 
 
