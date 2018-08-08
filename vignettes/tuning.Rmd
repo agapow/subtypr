@@ -16,31 +16,33 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Background
+# Background
 
 need to tune on hyper-parameters
 not a panacea
 may also need to explore rather than just take best
 
 
-## Tuning hyper-parameters
-
-# XXX: are they all hyper-parameters
 
 
+# Tuning hyper-parameters
+
+## XXX: are they all hyper-parameters
 
 
-## Data layer selection
+
+
+# Data layer selection
 
 Another and potentially important place for tuning lies in selecting which data layers to use for typing. For example, if expression, genomic, epigenomic, proteomic (etc.) matrices are available for analysis, should all be used for typing or just a subset? Different layers (modalities) will contain different information but it is unclear how often this information will be complementary and/or compatiable and how often it will reflect entirely distinct processes. Even a layer that is uninformative may lower analytical power. Initial exploration has shown that an uninformative layer may be equivalent to noise and that either may obsfucate typing unpredictably.
 
 
 
 
-## Robustness ?
+# Robustness ?
 
 Or does this belong in metrics?
-Cross valiodation
+Cross validation
 
 
 

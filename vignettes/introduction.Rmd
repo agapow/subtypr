@@ -40,7 +40,7 @@ be required. The newer multi-omic (integrated) methods may complicate these issu
 This package presents a number of tools and functions for improved and more
 consistent subtyping, including:
 
-* Unified and consistent interaces for subtyping practices
+* Unified and consistent interfaces for subtyping practices
 * Generation of synthetic data
 * Validation via internal measures and external ground truths. 
 * Functions for quality control and preprocessing of data

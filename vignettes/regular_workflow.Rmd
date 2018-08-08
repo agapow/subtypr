@@ -1,0 +1,139 @@
+---
+title: "Regular workflow"
+author: Romain Guédon, Paul Agapow
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Regular workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+Here we'll describe how to use `subtypr` to perform a robust analysis of the 
+glioblastoma multiforme (GBM) multi-omic dataset from TCGA that is provided with
+the package.
+
+```{r attach_packages, message=FALSE, warning=TRUE}
+library(subtypr)
+```
+
+## Data exploration
+
+```{r load_gbm}
+data_list <- gbm_data$data_list
+survival_data <- gbm_data$survival
+names(data_list)
+ncol(data_list$mrna)
+ncol(data_list$methylation)
+ncol(data_list$mirna)
+```
+
+
+The GBM dataset contains 273 patients on 3 layers: mRNA, methylation and miRNA with 
+12042, 22833 and 534 features respectively.
+
+To have more insight into the data, we'll use `check_distribution()`:
+
+On methylation data :
+
+```{r check_distribution_methylation}
+check_distribution(data_list$methylation, thickness = 0.1, split_figures = TRUE)
+```
+
+On mRNA data:
+
+```{r check_distribution_mrna}
+check_distribution(data_list$mrna, thickness = 0.1, split_figures = TRUE)
+```
+
+On miRNA data:
+
+```{r check_distribution_mirna}
+check_distribution(data_list$mirna, thickness = 0.3, split_figures = TRUE)
+```
+
+## Features selection
+
+There is a lot of features in our methylation data but a majority of them have a variance close to 0. Therefore, we have to 
+make a selection to avoid considering features with low variance. To do so, we provide `select_features()` to perform variance or mad cutoff or transformation to principal components.
+
+Here we use the variance cutoff. 
+
+```{r select_features_var}
+new_methylation <- select_features(data = data_list$methylation, method = "variance", cutoff = 0.05)
+new_mirna <- select_features(data = data_list$mirna, method = "variance", cutoff = 0.04)
+new_mrna <- select_features(data = data_list$mrna, method = "variance", cutoff = 0.5)
+```
+
+```{r check_fs_methylation}
+check_distribution(new_methylation, thickness = 0.1, split_figures = TRUE)
+```
+
+Re-list the data into a new list:
+
+```{r fs_data_list}
+fs_data_list <- list(methylation = new_methylation, mirna = new_mirna, mrna = new_mrna)
+```
+
+## Apply one subtyping method: Similarity Network Fusion.
+
+We've embedded several methods to perform multi-omics data integration in this package.
+
+To see all the available methods, use:
+
+```{r methods_available}
+names(get_method())
+```
+Here, we'll apply Similiarity Network Fusion (SNF). To have more information one the method, use the documentation `?nameofthemethod`.
+
+```{r}
+?subtype_snf
+```
+
+### Tuning the hyperparameters
+
+SNF requires a number of cluster to apply spectral clustering. It also requires hyperparameters: K, alpha and t. The authors give range of values for alpha but not for K nor t. How to pick the good parameters then ?
+
+We provide `tuning()` to allow a grid search where the performance of the method is assessed by a panel of built-in
+metrics.
+The idea of `tuning()` is that given:
+ * a method, a built-in one or a new one from the user, specified in `method`
+ * a set of values for each parameter, specified in `grid_support`
+ * a metric, specified in `metric`
+ * a partition, specified in `true_partition`, if the selected metric needs one (external metric)
+
+the function will test all the combinations of parameters using parallel computation (if `parallel = TRUE`) and
+select the set of parameters with the best value for the selected metric.
+
+Note that `tuning()` can be really computationnaly expensive if the generated combinations by `grid_support` are too large
+or if the data itself it too big. Therefore we advise to start exploring hyperparameters with a reasonable step between values (using `seq` for example):
+
+Note also that sometimes there is method-specific tools for tuning the number of cluster. However, these methods also requires the other parameters to be set and because we don't know how to set them, we don't know if the "optimal" number of
+cluster suggested can be meaningless. 
+
+Let's set the grid support:
+
+```{r grid_support }
+# The names of the list have to match the names of the method parameters.
+grid_support <- list(cluster_number = 2:5, 
+                     K = seq(10, 25, 3), 
+                     alpha = seq(0.3, 0.8, 0.1),
+                     t = c(10, 20))
+```
+
+We'll use an internal metric to perform the tuning: `metric = "asw_affinity"`. "asw_affinity" is the average silhouette width of the clusters (adapted for affinity matrices instead of distance matrices).
+
+```{r tuning_snf, cache = TRUE}
+result_tuning <- tuning(data_list = data_list, method = "subtype_snf", grid_support = grid_support, metric = "asw_affinity", true_partition = NULL, parallel = T, ncores = 7, plot = T)
+```
+
+
+

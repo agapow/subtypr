@@ -1,6 +1,6 @@
 ---
 title: "Adding methods"
-author: "Vignette Author"
+author: 
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
