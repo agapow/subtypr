@@ -226,13 +226,13 @@ subtype_anf <- function(data_list,
 #'     containing the data to be used with internal metrics.
 #'   * $dataTypeResult: A list of results for individual data type.
 #'     Each element of the list is the result of
-#'     \code\link[PINSPlus]{PerturbationClustering}
+#'     \code{\link[PINSPlus]{PerturbationClustering}}
 #'     for the corresponding data matrix provided in dataList.
 #'
 #' @export
 #'
-#' @seealso \code\link[PINSPlus]{PerturbationClustering},
-#'   \code\link[PINSPlus]{SubtypingOmicsData}.
+#' @seealso \code{\link[PINSPlus]{PerturbationClustering}},
+#'   \code{\link[PINSPlus]{SubtypingOmicsData}}.
 #'
 subtype_pins <- function(data_list,
                          minimal_return = FALSE,
