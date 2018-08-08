@@ -186,7 +186,20 @@ metrics_list$dunn <- list(
     )
   }
 )
-
+#### Cox p-value ####
+metrics_list$coxpval <- list(
+  name = "coxpval",
+  label = "Cox p-value",
+  maximize = TRUE,
+  internal = TRUE,
+  metric = function(pred_partition, true_partition = NULL, data_for_metric) {
+    analyze_survival(survival_time = data_for_metric$survival_time,
+                     death_status = data_for_metric$death_status,
+                     patient_partition = pred_partition,
+                     return = TRUE,
+                     no_plot = TRUE)
+  }
+)
 
 #### Export metrics_list ####
 
