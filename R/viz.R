@@ -106,15 +106,17 @@ plot_clinical_features <- function(clinical_feature, partition,
 #'
 #' @export
 #'
-plot_affinity_matrix <- function(affinity_matrix, partition){
+plot_affinity_matrix <- function(affinity_matrix, partition) {
   # Reorder the distance matrix according to the partition:
   ind <- sort(as.vector(partition), index.return = TRUE)
   ind <- ind$ix
   # Normalize for a good display:
   diag(affinity_matrix) <- 0
-  affinity_matrix <- affinity_matrix/rowSums(affinity_matrix)
+  affinity_matrix <- affinity_matrix / rowSums(affinity_matrix)
   # Plot:
   image(1:ncol(affinity_matrix), 1:nrow(affinity_matrix),
-        affinity_matrix[ind, ind], col = grey(100:0/100),
-        xlab = "Samples", ylab = "Samples")
+    affinity_matrix[ind, ind],
+    col = grey(100:0 / 100),
+    xlab = "Samples", ylab = "Samples"
+  )
 }
