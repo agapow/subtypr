@@ -32,7 +32,7 @@ validate_internal <- function(labels_internal, labels_external) {
 #'
 analyze_survival <- function(survival_time,
                              death_status,
-                             patient_partition,
+                             patients_partition,
                              return = FALSE,
                              no_plot = FALSE) {
 
@@ -78,22 +78,26 @@ analyze_survival <- function(survival_time,
 
     legend("topright",
       inset = 0.02,
-      legend = unlist(lapply(
-        1:k,
-        function(i) paste0("subtype ", i)
-      )),
+      legend = c(
+        unlist(lapply(1:k, function(i) paste0("subtype ", i))),
+        signif(cox_p_value, 2)),
       box.col = rainbow(1, alpha = 1),
-      lty = 1,
+      lty = c(rep(1, k), 0),
       col = rainbow(k),
-      box.lty = 0
+      box.lty = 0,
+      title = "subtypes & Cox p-value"
     )
 
+    opt <- options("scipen")
+    options(scipen = -2)
 
-    legend("bottomleft",
-      inset = 0.02,
-      legend = paste0("Cox p-value = ", round(cox_p_value, 6)),
-      box.lty = 0
-    )
+    # legend("right",
+    #   inset = 0.02,
+    #   legend = paste0("Cox p-value = ", ,
+    #   box.lty = 0
+    # )
+
+    options(opt)
   }
 
   ## Post-processing & return:
@@ -102,5 +106,3 @@ analyze_survival <- function(survival_time,
     return(cox_p_value)
   }
 }
-
-
