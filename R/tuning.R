@@ -42,7 +42,7 @@ evaluation <- function(data_list, method, grid, grid_row,
   # add the args of the grid:
   full_args[colnames(grid)] <- as.list(grid[grid_row, ])
 
-  if (return_metric){
+  if (return_metric) {
     full_args$minimal_return <- TRUE
   }
   ## Main
@@ -102,7 +102,7 @@ evaluation <- function(data_list, method, grid, grid_row,
 #'   computation.
 #'   If NULL, it takes the maximum number of cores - 1, using the function
 #'   \code{\link[parallel]{detectCores}}.
-
+#'
 #'
 #' @return a list:
 #'
@@ -124,11 +124,11 @@ tuning <- function(data_list, method, grid_support, metric,
                    true_partition = NULL,
                    parallel = TRUE,
                    ncores = NULL,
-                   plot = FALSE,
-                   verbose = TRUE,
                    save_results = FALSE,
+                   path_to_file = "./",
                    file_name = "tuning_result.RData",
-                   path_to_file = "./") {
+                   plot = TRUE,
+                   verbose = TRUE) {
 
   ## Preconditions & preparation:
   if (is.character(method)) {
@@ -174,13 +174,13 @@ tuning <- function(data_list, method, grid_support, metric,
   } else {
     execution_time <- system.time(
       evaluations <- lapply(1:l, function(grid_row) evaluation(
-        data_list = data_list,
-        method = method,
-        grid = grid,
-        grid_row = grid_row,
-        metric = metric,
-        true_partition = true_partition,
-        return_metric = TRUE
+          data_list = data_list,
+          method = method,
+          grid = grid,
+          grid_row = grid_row,
+          metric = metric,
+          true_partition = true_partition,
+          return_metric = TRUE
         ))
     )
   }
@@ -215,9 +215,22 @@ tuning <- function(data_list, method, grid_support, metric,
 
 
   # Reconstruct the result:
-  res <- evaluation(data_list, method, grid, max_ind, metric, return_res = TRUE)
+  res <- evaluation(data_list, method, grid, max_ind, metric, return_metric = F)
+
+  # Build return list:
+  res_list <- list(
+    method = method,
+    method_res = res,
+    best_parameters = as.list(grid[max_ind, ]),
+    metric = metric,
+    best_metric_value = evaluations[[max_ind]],
+    all_metric_values = unlist(evaluations),
+    parameters_grid = grid,
+    grid_support = grid_support
+  )
 
   # Save the computation:
+
 
   if (save_results) {
     while (!file.exists(path_to_file)) {
@@ -231,27 +244,14 @@ tuning <- function(data_list, method, grid_support, metric,
     tuning_result <- list(
       date_of_execution = Sys.Date(),
       time_of_execution = execution_time,
-      grid_support_provided = grid_support,
-      metric_used = metric,
-      list_of_metrics_values = t(evaluations),
-      tuning_result_list = list(
-        metric_val = evaluations[[max_ind]],
-        parameters = as.list(grid[max_ind, ]),
-        method_used = method,
-        method_res = res
-      )
+      tuning_result_list = res_list
     )
     print(full_file_name)
     save(tuning_result, file = full_file_name)
   }
 
   # Return:
-  return(list(
-    metric_val = evaluations[[max_ind]],
-    parameters = as.list(grid[max_ind, ]),
-    method_used = method,
-    method_res = res
-  ))
+  return(res_list)
 }
 
 
@@ -286,6 +286,8 @@ overview_metrics <- function(method_result,
                              external_metrics = NULL,
                              print = T,
                              plot = T) {
+
+  ## Preconditions & preparation:
   all_metrics <- get_metric(list_format = TRUE)
   internal_metrics_list <- NULL
   external_metrics_list <- NULL
@@ -319,16 +321,24 @@ overview_metrics <- function(method_result,
   # concatenate the list
   actual_list <- do.call(c, list(internal_metrics_list, external_metrics_list))
   l <- length(actual_list)
+
+  ## Main
   if (l == 0) {
     stop("Neither internal metric nor ground-truth provided,
          please provide a ground-truth (and/) or a list of internal metrics")
   } else {
     # compute the values of metrics in actual_list
     metrics_values <- data.frame(values = 1:l, row.names = names(actual_list))
+
+    # partition = partition,
+    # element_for_metric = "affinity_fused",
+    # affinity_fused = affinity_fused
+
     for (metric in actual_list) {
       metrics_values[metric$name, "values"] <- metric$metric(
-        method_result,
-        true_partition, plot
+        pred_partition = method_result$partition,
+        true_partition = true_partition,
+        data_for_metric = method_result[[methods_result$element_for_metric]]
       )
       if (print) {
         print(paste0(
@@ -337,6 +347,8 @@ overview_metrics <- function(method_result,
         ))
       }
     }
-    return(metrics_values)
   }
+
+  ## Return
+  metrics_values
 }
