@@ -3,6 +3,7 @@ title: "Regular workflow"
 author: Romain Guédon, Paul Agapow
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+number_sections: true
 vignette: >
   %\VignetteIndexEntry{Regular workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,7 +13,11 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.align = "center",
+  fig.retina = 2,
+  fig.width = 6,
+  cache.lazy = FALSE
 )
 ```
 
@@ -92,11 +97,7 @@ To see all the available methods, use:
 ```{r methods_available}
 names(get_method())
 ```
-Here, we'll apply Similiarity Network Fusion (SNF). To have more information one the method, use the documentation `?nameofthemethod`.
-
-```{r}
-?subtype_snf
-```
+Here, we'll apply Similiarity Network Fusion (SNF). To have more information one the method, use the documentation. For example: `?subtype_snf`.
 
 ### Tuning the hyperparameters
 
@@ -121,7 +122,7 @@ cluster suggested can be meaningless.
 
 Let's set the grid support:
 
-```{r grid_support }
+```{r grid_support, cache=TRUE}
 # The names of the list have to match the names of the method parameters.
 grid_support <- list(cluster_number = 2:5, 
                      K = seq(10, 25, 3), 
@@ -131,9 +132,34 @@ grid_support <- list(cluster_number = 2:5,
 
 We'll use an internal metric to perform the tuning: `metric = "asw_affinity"`. "asw_affinity" is the average silhouette width of the clusters (adapted for affinity matrices instead of distance matrices).
 
-```{r tuning_snf, cache = TRUE}
+```{r tuning_snf, cache = TRUE, dependson=c("grid_support")}
 result_tuning <- tuning(data_list = data_list, method = "subtype_snf", grid_support = grid_support, metric = "asw_affinity", true_partition = NULL, parallel = T, ncores = 7, plot = T)
 ```
 
+Use `$all_metric_values` in your tuning result to have an overview of the values of the metric for all the parameters:
+
+```{r plot_the_result}
+plot(unlist(result_tuning$all_metric_values), ylab = "Metric values")
+```
+
+### Survival analysis 
+
+A metric evaluate only partial aspects of the clustering results. Therefore, we provide `overview_metrics()` to evaluate the "best" set of parameters returned by `tuning()` with other metrics. 
+Here, the only internal metric suitable for affinity matrix is the metric we used for tuning and we don't have a ground truth... but we have the survival data. We'll use `analyze_survival()`:
+
+```{r analyze_survival}
+analyze_survival(survival_time = survival_data$Survival, 
+                 death_status = survival_data$Death, 
+                 patients_partition = result_tuning$method_res$partition)
+  
+```
+
+<!-- ## Comparison of methods -->
+
+<!-- Here, we'll compare the performance of two methods: SNF and Affinity Network Fusion (ANF). The comparison of methods is often done without tuning properly the "adversary" methods. The core idea here is that we'll use `tuning()` to use each methods at their full potential. -->
+
+<!-- ```{r} -->
+
+<!-- ``` -->
 
 
