@@ -2,33 +2,38 @@
 #'
 #' Many methods have restrictions on the data they can use (most notably
 #' missing data). This is a simple function for assessing the quality of
-#' input data, which allows the trigger condition to be modified.
+#' input data. By default it looks for missing (NA) data although the
+#' the trigger condition can be modified.
 #'
-#' @param m a feature matrix with samples in rows and features in columns
+#' @param m a sample-feature matrix
 #' @param flag_fxn a boolean function that detects problematic data
 #'
 #' @return a summary of how the matrix is affected by problematic data
 #' @export
 #'
 flag_data <- function(m, flag_fxn = is.na) {
-  # XXX: shouldthis return a table like summary or pca?
+  # XXX: should this return a table like summary or pca?
   ## Preconditions:
-  assert_that(is.function(flag_fxn))
+  at_assert(is.function(flag_fxn))
 
   ## Main:
   cols_with_flagged_data <- unname(apply(m, MARGIN = 2, function(x) sum(flag_fxn(x))))
   rows_with_flagged_data <- unname(apply(m, MARGIN = 1, function(x) sum(flag_fxn(x))))
-  flagged_data <- sum(rows_with_flagged_data)
 
-  data_less_flagged <- m[!rows_with_flagged_data, !cols_with_flagged_data]
+  flagged_data_cnt <- sum(rows_with_flagged_data)
+  at_assert(flagged_data_cnt == sum(cols_with_flagged_data))
+
+  data_less_flagged <- subset (m, !rows_with_flagged_data, !cols_with_flagged_data)
 
   ## Postconditions & return:
-  return(c(
-    flagged_data = flagged_data,
-    rows_with_flagged_data = unname(rows_with_flagged_data),
-    cols_with_flagged_data = unname(cols_with_flagged_data),
-    dims_without_flagged_data = dim(m)
-  ))
+  return(
+    list (
+      flagged_data_cnt = flagged_data_cnt,
+      flagged_rows_cnt = sum (as.logical (rows_with_flagged_data)),
+      flagged_cols_cnt = sum (as.logical (cols_with_flagged_data)),
+      dims_without_flagged_data = dim (data_less_flagged)
+    )
+  )
 }
 
 
@@ -45,10 +50,9 @@ flag_data <- function(m, flag_fxn = is.na) {
 filter_flagged_data <- function(m, flag_fxn = is.na) {
   # XXX: or should this actually be in the caret data transformation stuff?
   # XXX: combine with function above?
-  # TODO: does this work if it reduces the matrix to nothing
 
   ## Preconditions:
-  assert_that(is.function(flag_fxn))
+  at_assert (is.function(flag_fxn))
 
   ## Main:
   cols_with_flagged_data <- unname(apply(m, MARGIN = 2, function(x) sum(flag_fxn(x))))
@@ -56,9 +60,28 @@ filter_flagged_data <- function(m, flag_fxn = is.na) {
 
   ## Postconditions & return:
   return(
-    m[!rows_with_flagged_data, !cols_with_flagged_data]
+    subset (m, !rows_with_flagged_data, !cols_with_flagged_data)
+  )
+}
+
+
+transform_flagged_data <- function(m, flag_fxn = is.na, trans_val) {
+
+  ## Preconditions:
+  at_assert (is.function(flag_fxn))
+
+  ## Main:
+  cols_with_flagged_data <- unname(apply(m, MARGIN = 2, function(x) sum(flag_fxn(x))))
+  rows_with_flagged_data <- unname(apply(m, MARGIN = 1, function(x) sum(flag_fxn(x))))
+
+  ## Postconditions & return:
+  return(
+    subset (m, !rows_with_flagged_data, !cols_with_flagged_data)
   )
 }
 
 
 # TODO: also check in multi-omics that each matrix has same samples
+# TODO: transform flagged data
+# TODO: split negative matrix
+
