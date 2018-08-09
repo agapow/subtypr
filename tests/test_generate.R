@@ -5,21 +5,23 @@ snf <- get_method("snf")
 
 # Check partitions:
 partitions <- generate_partitions(610, 3)
-for (i in 1:3){
+for (i in 1:3) {
   plot(partitions$partitions[i, ])
 }
 
 
-for (i in 1:3){
+for (i in 1:3) {
   print(dim(svd(breast_cancer_data$data_list[[2]])[[i]]))
 }
 
 # Check generation:
-multi <- generate_multi_structured(data_support = breast_cancer_data$data_list,
-                                    structure_type = "moclus",
-                                    sd_signal = 10,
-                                    sparse = TRUE,
-                                    percent_sparsity = c(0.5, 0, 0.5))
+multi <- generate_multi_structured(
+  data_support = breast_cancer_data$data_list,
+  structure_type = "moclus",
+  sd_signal = 10,
+  sparse = TRUE,
+  percent_sparsity = c(0.5, 0, 0.5)
+)
 
 
 
