@@ -24,13 +24,13 @@ select_variance <- function(data, cutoff) {
 #' @return A features matrix with only selected principal components.
 #'
 select_pca <- function(data, min_pve = 1, scale = TRUE) {
-  prcomps = prcomp(data, scale. = scale)
+  prcomps <- prcomp(data, scale. = scale)
   vars <- apply(prcomps$x, 2, var)
-  props <- vars/sum(vars)
-  pves = as.vector(cumsum(props))
-  num = which(pves > min_pve)[1]
-  coeff = prcomps$ro
-  res = (as.matrix(data) %*% coeff)[, 1:num]
+  props <- vars / sum(vars)
+  pves <- as.vector(cumsum(props))
+  num <- which(pves > min_pve)[1]
+  coeff <- prcomps$ro
+  res <- (as.matrix(data) %*% coeff)[, 1:num]
   as.data.frame(res)
 }
 
@@ -73,7 +73,6 @@ select_mad <- function(data, cutoff) {
 #' @export
 #'
 select_features <- function(data, method = c("variance", "pca", "mad"), ...) {
-
   method <- match.arg(method)
 
   if (method == "variance") {
@@ -84,5 +83,3 @@ select_features <- function(data, method = c("variance", "pca", "mad"), ...) {
     select_mad(data, ...)
   }
 }
-
-
