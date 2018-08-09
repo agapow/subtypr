@@ -17,7 +17,6 @@
 #'     layer.
 #'
 generate_partitions <- function(n_samples, n_layers, n_cluster = 4) {
-
   if (n_cluster != 4) stop("only built for n_cluster == 4")
 
   # n_samples == group_size * n_cluster + rest_size
@@ -27,26 +26,28 @@ generate_partitions <- function(n_samples, n_layers, n_cluster = 4) {
 
   # Either type 1: 11112222 or type 2: 11221122, the first half of the data
   # layers are type 1 and the second half is type 2:
-  layer_structure <- c(rep(1, n_layers %/% 2),
-                       rep(2, n_layers - n_layers %/% 2))
+  layer_structure <- c(
+    rep(1, n_layers %/% 2),
+    rep(2, n_layers - n_layers %/% 2)
+  )
 
   partitions <- matrix(0, n_layers, n_samples)
   for (i in 1:n_layers) {
     switch(layer_structure[i],
-           # case 1
-           partitions[i, ] <- c(
-             rep(1, group_size * (n_cluster / 2)),
-             rep(2, group_size * (n_cluster / 2)),
-             rep(2, rest_size)
-           ),
-           # case 2
-           partitions[i, ] <- c(
-             rep(1, group_size),
-             rep(2, group_size),
-             rep(1, group_size),
-             rep(2, group_size),
-             rep(2, rest_size)
-           )
+      # case 1
+      partitions[i, ] <- c(
+        rep(1, group_size * (n_cluster / 2)),
+        rep(2, group_size * (n_cluster / 2)),
+        rep(2, rest_size)
+      ),
+      # case 2
+      partitions[i, ] <- c(
+        rep(1, group_size),
+        rep(2, group_size),
+        rep(1, group_size),
+        rep(2, group_size),
+        rep(2, rest_size)
+      )
     )
   }
 
@@ -56,8 +57,10 @@ generate_partitions <- function(n_samples, n_layers, n_cluster = 4) {
 
   # re-scale cluster indicator from 1 to n_cluster:
   partition_tot <- as.integer(as.factor(partition_tot))
-  list(partition_tot = partition_tot,
-       partitions = partitions)
+  list(
+    partition_tot = partition_tot,
+    partitions = partitions
+  )
 }
 
 
@@ -97,22 +100,26 @@ generate_single_moclust <- function(X, partition, sd_signal = 0.5,
 
   ## Main
   svd_X <- svd(X)
-  d_modified <- c(svd_X$d[1],
-                  matrix(mean(svd_X$d[2:length(svd_X$d)]),
-                         1,
-                         length(svd_X$d) - 1))
+  d_modified <- c(
+    svd_X$d[1],
+    matrix(
+      mean(svd_X$d[2:length(svd_X$d)]),
+      1,
+      length(svd_X$d) - 1
+    )
+  )
 
 
 
   # x_tilde generation:
   x_tilde <- matrix(0, n_cluster, n_features)
-  for (c in 1:n_cluster){
+  for (c in 1:n_cluster) {
     x_tilde[c, ] <- rnorm(n_features, 0, sd_signal)
   }
 
   # X_sim generation:
   X_sim <- matrix(0, n_samples, n_features)
-  for (i in 1:n_samples){
+  for (i in 1:n_samples) {
     X_sim[i, ] <- x_tilde[partition[i], ] + rnorm(n_features)
   }
 
@@ -125,7 +132,6 @@ generate_single_moclust <- function(X, partition, sd_signal = 0.5,
       sparse_index <- sample(x = n_features, size = n_sparse)
       svd_X$v[sparse_index, ] <- matrix(0, n_sparse, n_samples)
     }
-
   }
 
   # Combine:
@@ -173,20 +179,24 @@ generate_multi_moclust <- function(data_support, sd_signal = 0.5,
   partitions <- partitions_list$partitions
 
   ## Main
-  data_generated <- vector('list', n_layers)
-  for (l in 1:n_layers){
+  data_generated <- vector("list", n_layers)
+  for (l in 1:n_layers) {
     data_generated[[l]] <-
-      generate_single_moclust(X = data_support[[l]],
-                              partition = partitions[l, ],
-                              sd_signal = sd_signal,
-                              sparse = sparse,
-                              percent_sparsity = percent_sparsity[l])
+      generate_single_moclust(
+        X = data_support[[l]],
+        partition = partitions[l, ],
+        sd_signal = sd_signal,
+        sparse = sparse,
+        percent_sparsity = percent_sparsity[l]
+      )
   }
 
   ## Postconditions & return
-  return(list(data_generated = data_generated,
-       partition_tot = partition_tot,
-       partitions = partitions))
+  return(list(
+    data_generated = data_generated,
+    partition_tot = partition_tot,
+    partitions = partitions
+  ))
 }
 
 
@@ -212,8 +222,8 @@ generate_multi_moclust <- function(data_support, sd_signal = 0.5,
 #'   `data_support`
 #'
 generate_multi_structured <- function(data_support,
-                                       structure_type = c("moclus"),
-                                       ...) {
+                                      structure_type = c("moclus"),
+                                      ...) {
 
   ## Preconditions & preparation:
   structure_type <- match.arg(structure_type)
@@ -221,8 +231,10 @@ generate_multi_structured <- function(data_support,
   ## Main:
 
   if (structure_type == "moclus") {
-    return(generate_multi_moclust(data_support = data_support,
-                                  ...))
+    return(generate_multi_moclust(
+      data_support = data_support,
+      ...
+    ))
   }
 }
 
@@ -248,7 +260,7 @@ generate_multi_structured <- function(data_support,
 #'   (gaussian by default).
 #'
 generate_multi_unstructured <- function(type = c("gaussian", "uniform"),
-                                         n_samples, n_features, n_layers) {
+                                        n_samples, n_features, n_layers) {
   type <- match.arg(type)
 
   data_list <- vector("list", n_layers)
@@ -256,9 +268,9 @@ generate_multi_unstructured <- function(type = c("gaussian", "uniform"),
     h <- n_features[t]
     # synthetization
     if (type == "gaussian") {
-      data_list[[t]] <- matrix(rnorm(n_samples*h), n_samples, h)
+      data_list[[t]] <- matrix(rnorm(n_samples * h), n_samples, h)
     } else if (type == "uniform") {
-      data_list[[t]] <- matrix(runif(n_samples*h), n_samples, h)
+      data_list[[t]] <- matrix(runif(n_samples * h), n_samples, h)
     }
   }
   data_list
@@ -301,9 +313,11 @@ generate_multi_unstructured <- function(type = c("gaussian", "uniform"),
 #' @return 'multi-omic' synthetic data matrices for validation.
 #'
 #' @export
-generate_synth_data <- function(type = c("gaussian",
-                                         "uniform",
-                                         "moclus"),
+generate_synth_data <- function(type = c(
+                                  "gaussian",
+                                  "uniform",
+                                  "moclus"
+                                ),
                                 n_samples = NULL,
                                 n_features = NULL,
                                 n_layers = NULL,
