@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{subtype_pins}
 \alias{subtype_pins}
-\title{Subtype using PINSPlus package}
+\title{Subtypes using PINSPlus package}
 \usage{
 subtype_pins(data_list, minimal_return = FALSE, return_stage_2 = TRUE,
   k_max = 5, agreement_cutoff = 0.5, verbose = T, ...)

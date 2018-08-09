@@ -5,7 +5,8 @@
 \title{An overview of the results with all available metrics}
 \usage{
 overview_metrics(method_result, internal_metrics = NULL,
-  true_partition = NULL, external_metrics = NULL, print = T, plot = T)
+  true_partition = NULL, external_metrics = NULL, print = T,
+  plot = T)
 }
 \arguments{
 \item{method_result}{a list returned by built-in methods i.e. a list with an

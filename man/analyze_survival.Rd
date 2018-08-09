@@ -4,7 +4,7 @@
 \alias{analyze_survival}
 \title{Plots the survival curves and compute the Cox p-value}
 \usage{
-analyze_survival(survival_time, death_status, patient_partition,
+analyze_survival(survival_time, death_status, patients_partition,
   return = FALSE, no_plot = FALSE)
 }
 \arguments{
@@ -12,12 +12,12 @@ analyze_survival(survival_time, death_status, patient_partition,
 
 \item{death_status}{integer, 0 = alive, 1 = dead}
 
+\item{patients_partition}{a partition of the patients}
+
 \item{return}{logical, TRUE to return the cox p-value}
 
 \item{no_plot}{logical, set to TRUE to avoid plotting and return
 the cox p-value.}
-
-\item{patients_partition}{a partition of the patients}
 }
 \value{
 the cox p-value (if return or no_plot is TRUE).

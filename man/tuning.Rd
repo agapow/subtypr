@@ -5,9 +5,9 @@
 \title{Tunes the methods to have the best set of parameters}
 \usage{
 tuning(data_list, method, grid_support, metric, true_partition = NULL,
-  parallel = TRUE, ncores = NULL, plot = FALSE, verbose = TRUE,
-  save_results = FALSE, file_name = "tuning_result.RData",
-  path_to_file = "./")
+  parallel = TRUE, ncores = NULL, save_results = FALSE,
+  path_to_file = "./", file_name = "tuning_result.RData",
+  plot = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{data_list}{a list of data matrices with continuous data of format
@@ -36,18 +36,18 @@ computation.
 If NULL, it takes the maximum number of cores - 1, using the function
 \code{\link[parallel]{detectCores}}.}
 
+\item{save_results}{logical, to save the result of tuning in \code{path_to_file}}
+
+\item{path_to_file}{if save_results, results of the tuning are save to this
+path}
+
+\item{file_name}{filename finishing by .RData or .rda}
+
 \item{plot}{logical, set TRUE to plot the metric evaluation of each grid
 point to have an overview of the impact of the variation of the parameters
 on the value of the considered metric.}
 
 \item{verbose}{logical, set FALSE to avoid printing of informations}
-
-\item{save_results}{logical, to save the result of tuning in \code{path_to_file}}
-
-\item{file_name}{filename finishing by .RData or .rda}
-
-\item{path_to_file}{if save_results, results of the tuning are save to this
-path}
 }
 \value{
 a list:

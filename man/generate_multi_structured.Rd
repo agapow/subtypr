@@ -4,7 +4,8 @@
 \alias{generate_multi_structured}
 \title{Generate synthetic data based on a list of features matrics.}
 \usage{
-generate_multi_structured(data_support, structure_type = c("moclus"), ...)
+generate_multi_structured(data_support, structure_type = c("moclus"),
+  ...)
 }
 \arguments{
 \item{data_support}{A list of features matrices used to generate the
