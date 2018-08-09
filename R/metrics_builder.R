@@ -22,9 +22,11 @@ metrics_list$asw_affinity <- list(
   maximize = TRUE,
   internal = TRUE,
   metric = function(pred_partition, true_partition, data_for_metric) {
-    silhouette_affinity(pred_partition = pred_partition,
-                        affinity_matrix = data_for_metric,
-                        average = TRUE)
+    silhouette_affinity(
+      pred_partition = pred_partition,
+      affinity_matrix = data_for_metric,
+      average = TRUE
+    )
   }
 )
 
@@ -40,9 +42,11 @@ metrics_list$asw_distance <- list(
   maximize = TRUE,
   internal = TRUE,
   metric = function(pred_partition, true_partition, data_for_metric) {
-    silhouette_distance(pred_partition = pred_partition,
-                        distance_matrix = data_for_metric,
-                        average = TRUE)
+    silhouette_distance(
+      pred_partition = pred_partition,
+      distance_matrix = data_for_metric,
+      average = TRUE
+    )
   }
 )
 
@@ -186,20 +190,21 @@ metrics_list$dunn <- list(
     )
   }
 )
-#### Cox p-value ####
-metrics_list$coxpval <- list(
-  name = "coxpval",
-  label = "Cox p-value",
-  maximize = TRUE,
-  internal = TRUE,
-  metric = function(pred_partition, true_partition = NULL, data_for_metric) {
-    analyze_survival(survival_time = data_for_metric$survival_time,
-                     death_status = data_for_metric$death_status,
-                     patient_partition = pred_partition,
-                     return = TRUE,
-                     no_plot = TRUE)
-  }
-)
+
+# #### Cox p-value ####
+# metrics_list$coxpval <- list(
+#   name = "coxpval",
+#   label = "Cox p-value",
+#   maximize = TRUE,
+#   internal = TRUE,
+#   metric = function(pred_partition, true_partition = NULL, data_for_metric) {
+#     analyze_survival(survival_time = data_for_metric$survival_time,
+#                      death_status = data_for_metric$death_status,
+#                      patient_partition = pred_partition,
+#                      return = TRUE,
+#                      no_plot = TRUE)
+#   }
+# )
 
 #### Export metrics_list ####
 
