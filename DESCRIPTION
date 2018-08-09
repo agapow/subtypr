@@ -13,7 +13,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     devtools,
-Depends:
+Depends:  nh7 y
     cluster
 Suggests: 
     knitr,

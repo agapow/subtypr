@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Aim
 
 Here we'll describe how to use `subtypr` to perform a robust analysis of the 
 glioblastoma multiforme (GBM) multi-omic dataset from TCGA that is provided with
@@ -24,6 +25,7 @@ the package.
 ```{r attach_packages, message=FALSE, warning=TRUE}
 library(subtypr)
 ```
+
 
 ## Data exploration
 

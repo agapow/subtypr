@@ -79,3 +79,9 @@ get_metric <- function(metric = NULL, list_format = FALSE) {
     metrics_list
   }
 }
+
+
+# some syntactic sugar for brevity
+at_assert <- assertthat::assert_that
+
+

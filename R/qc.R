@@ -11,9 +11,9 @@
 #' @export
 #'
 flag_data <- function(m, flag_fxn = is.na) {
-  # XXX: shouldthis return a table like summary or pca?
+  # XXX: should this return a table like summary or pca?
   ## Preconditions:
-  assert_that(is.function(flag_fxn))
+  at_assert(is.function(flag_fxn))
 
   ## Main:
   cols_with_flagged_data <- unname(apply(m, MARGIN = 2, function(x) sum(flag_fxn(x))))
@@ -23,12 +23,14 @@ flag_data <- function(m, flag_fxn = is.na) {
   data_less_flagged <- m[!rows_with_flagged_data, !cols_with_flagged_data]
 
   ## Postconditions & return:
-  return(c(
-    flagged_data = flagged_data,
-    rows_with_flagged_data = unname(rows_with_flagged_data),
-    cols_with_flagged_data = unname(cols_with_flagged_data),
-    dims_without_flagged_data = dim(m)
-  ))
+  return(
+    c(
+      flagged_data_cnt = flagged_data,
+      flagged_rows_cnt = unname(rows_with_flagged_data),
+      flagged_cols_cnt = unname(cols_with_flagged_data),
+      dims_without_flagged_data = dim (data_less_flagged)
+    )
+  )
 }
 
 
@@ -48,7 +50,7 @@ filter_flagged_data <- function(m, flag_fxn = is.na) {
   # TODO: does this work if it reduces the matrix to nothing
 
   ## Preconditions:
-  assert_that(is.function(flag_fxn))
+  at_assert(is.function(flag_fxn))
 
   ## Main:
   cols_with_flagged_data <- unname(apply(m, MARGIN = 2, function(x) sum(flag_fxn(x))))
