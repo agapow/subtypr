@@ -52,8 +52,10 @@ subtype_snf <- function(data_list,
   # SNF process
   affinity_fused <- SNFtool::SNF(
     Wall = lapply(
-      lapply(data_list, function(data) SNFtool::dist2(as.matrix(data),
-                                                        as.matrix(data))),
+      lapply(data_list, function(data) SNFtool::dist2(
+          as.matrix(data),
+          as.matrix(data)
+        )),
       function(dist) SNFtool::affinityMatrix(
           diff = dist,
           K = K,
@@ -184,7 +186,7 @@ subtype_anf <- function(data_list,
 }
 
 
-#' Subtype using PINSPlus package
+#' Subtypes using PINSPlus package
 #'
 #' Perform subtyping using multiple types of data
 #'
@@ -264,4 +266,57 @@ subtype_pins <- function(data_list,
       data_type_result = result$dataTypeResult
     )
   }
+}
+
+#' Subtypes using ConsensusClusterPlus
+#'
+#'
+#' ConsensusClusterPlus function for determing cluster number and class
+#'   membership by stability evidence. calcICL function for calculating
+#'   cluster-consensus and item-consensus.
+#'
+#' @param data_list
+#' @param minimal_return
+#' @param maxK
+#' @param reps
+#' @param pItem
+#' @param pFeature
+#' @param clusterAlg
+#' @param title
+#' @param innerLinkage
+#' @param finalLinkage
+#' @param distance
+#' @param ml
+#' @param tmyPal
+#' @param seed
+#' @param plot
+#' @param writeTable
+#' @param weightsItem
+#' @param weightsFeature
+#' @param verbose
+#' @param corUse
+#'
+#' @return
+#' @export
+#'
+#' @seealso \code{\link[ConsensusClusterPlus]{ConsensusClusterPlus}}
+#'
+subtype_consensus_clustering <- function(data_list, minimal_return = FALSE,
+                                         maxK = 3, reps=10,
+                                         pItem=0.8,
+                                         pFeature=1, clusterAlg="hc",
+                                         title="untitled_consensus_cluster",
+                                         innerLinkage="average",
+                                         finalLinkage="average",
+                                         distance="pearson", ml=NULL,
+                                         tmyPal=NULL,
+                                         seed=NULL,
+                                         plot=NULL, writeTable=FALSE,
+                                         weightsItem=NULL, weightsFeature=NULL,
+                                         verbose=F,corUse="everything") {
+
+  ## Preparation & preconditions
+
+
+
 }
