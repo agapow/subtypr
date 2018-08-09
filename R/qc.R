@@ -50,7 +50,22 @@ flag_data <- function(m, flag_fxn = is.na) {
 filter_flagged_data <- function(m, flag_fxn = is.na) {
   # XXX: or should this actually be in the caret data transformation stuff?
   # XXX: combine with function above?
-  # TODO: does this work if it reduces the matrix to nothing
+
+  ## Preconditions:
+  at_assert (is.function(flag_fxn))
+
+  ## Main:
+  cols_with_flagged_data <- unname(apply(m, MARGIN = 2, function(x) sum(flag_fxn(x))))
+  rows_with_flagged_data <- unname(apply(m, MARGIN = 1, function(x) sum(flag_fxn(x))))
+
+  ## Postconditions & return:
+  return(
+    subset (m, !rows_with_flagged_data, !cols_with_flagged_data)
+  )
+}
+
+
+transform_flagged_data <- function(m, flag_fxn = is.na, trans_val) {
 
   ## Preconditions:
   at_assert (is.function(flag_fxn))
