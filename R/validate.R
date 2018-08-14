@@ -73,8 +73,9 @@ analyze_survival <- function(survival_time,
       main = "Kaplan-Meier survival plot", col = rainbow(k)
     )
 
-    # xlim <- max(pl$x) for the legend
 
+    opt <- options("scipen")
+    options(scipen = -2)
 
     legend("topright",
       inset = 0.02,
@@ -87,16 +88,6 @@ analyze_survival <- function(survival_time,
       box.lty = 0,
       title = "subtypes & Cox p-value"
     )
-
-    opt <- options("scipen")
-    options(scipen = -2)
-
-    # legend("right",
-    #   inset = 0.02,
-    #   legend = paste0("Cox p-value = ", ,
-    #   box.lty = 0
-    # )
-
     options(opt)
   }
 

@@ -326,15 +326,15 @@ generate_synth_data <- function(type = c(
   ## Preconditions & preparation:
   type <- match.arg(type)
   if (type %in% c("uniform", "gaussian")) {
-    assert_that(
+    assertthat::assert_that(
       !is.null(n_samples), 2 <= n_samples,
-      !is.null(n_features), 1 <= n_features,
+      !is.null(n_features), all(1 <= n_features),
       !is.null(n_layers), 1 <= n_layers,
       msg = "size and number of output matrices required"
     )
   }
   if (type %in% c("moclus")) {
-    assert_that(
+    assertthat::assert_that(
       !is.null(support_data_list),
       msg = "support_data_list missing"
     )
@@ -343,19 +343,19 @@ generate_synth_data <- function(type = c(
 
   ## Main:
   if (type == "gaussian") {
-    data_list <- generate_matrix_unstructured(
+    data_list <- generate_multi_unstructured(
       type = "gaussian",
       n_samples, n_features, n_layers
     )
     res <- list(data_generated = data_list)
   } else if (type == "uniform") {
-    data_list <- generate_matrix_unstructured(
+    data_list <- generate_multi_unstructured(
       type = "uniform",
       n_samples, n_features, n_layers
     )
     res <- list(data_generated = data_list)
   } else if (type == "moclus") {
-    res <- generate_matrix_structured(
+    res <- generate_multi_structured(
       data_support = support_data_list,
       structure_type = "moclus",
       ...
