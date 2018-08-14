@@ -1,8 +1,42 @@
-# Romain GUEDON
-# metrics.R
+# Generates the metrics.RData so it builds the object metrics_list
 
-# generate the metrics.RData
-# so it builds the object metrics_list
+#### Documentation of metrics ####
+
+#' Metrics implemented
+#'
+#' subtypr provide both internal and external metrics to evaluate clustering
+#'   results.
+#'
+#' There is two versions of each metric. The raw version - directly accessible
+#' by the user - and a standardized version for the built-in functions of the
+#' package (the idea is that the result is numeric, e.g. for silhouette index,
+#' the value is the average silhouette width). The argument `metric` is always
+#' the name of the standardized version.
+#' You can access the standardized version with the
+#' `get_metric` function. To have all the names of the standardized metrics,
+#'  use `names(get_metric())`.
+#'
+#' Here we indicate the raw version documentation name and it's corresponding
+#' standardized version: like this:
+#' ?raw_version ~ "name_of_standardized_version"
+#'
+#' Internal metrics:
+#'
+#'   * Silhouette index: ?silhouette_distance ~ "asw_distance" or
+#'   ?silhouette_affinity ~ "asw_affinity"
+#'
+#' External metrics:
+#'   * Adjusted Rand Index: ?adjusted_rand_index ~ "ari"
+#'   * Mutual Information: ?mutual_information ~ "mi"
+#'   * Normalized Mutual Information: ?normalized_mutual_information ~ "nmi"
+#'   * Meila's Variation Index: ?meila_vi ~ "meilaVI"
+#'   * Dunn index: ?dunn_index ~ "dunn"
+#'   * Homogeneity, Completeness & V-measure:
+#'   ?homogeneity_completeness_vmeasure ~ "homogeneity" or "completeness" or
+#'   "v_measure"
+#'
+"metrics_list"
+
 
 #### Create metrics_list ####
 
