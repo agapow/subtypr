@@ -22,7 +22,7 @@ You can access the standardized version with the
 \code{get_metric} function. To have all the names of the standardized metrics,
 use \code{names(get_metric())}.
 
-Here we indicate the raw version documentation and it's corresponding
+Here we indicate the raw version documentation name and it's corresponding
 standardized version: like this:
 ?raw_version ~ "name_of_standardized_version"
 

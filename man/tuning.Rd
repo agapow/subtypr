@@ -6,15 +6,14 @@
 \usage{
 tuning(data_list, method, grid_support, metric, true_partition = NULL,
   parallel = TRUE, ncores = NULL, save_results = FALSE,
-  path_to_file = "./", file_name = "tuning_result.RData",
-  plot = TRUE, verbose = TRUE)
+  file_name = "./tuning_result.RData", plot = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{data_list}{a list of data matrices with continuous data of format
 samples x features (with the same number of samples).}
 
 \item{method}{a string being the name of the built-in method to be used or a
-'method list' with the same format as the built-in ones.}
+'method list' with the same format as the built-in ones. See Details}
 
 \item{grid_support}{a list with a set of value for each parameter to be
 tuned. The typo has to be correct. Use formals(method$func) to know all the
@@ -38,9 +37,6 @@ If NULL, it takes the maximum number of cores - 1, using the function
 
 \item{save_results}{logical, to save the result of tuning in \code{path_to_file}}
 
-\item{path_to_file}{if save_results, results of the tuning are save to this
-path}
-
 \item{file_name}{filename finishing by .RData or .rda}
 
 \item{plot}{logical, set TRUE to plot the metric evaluation of each grid
@@ -48,6 +44,9 @@ point to have an overview of the impact of the variation of the parameters
 on the value of the considered metric.}
 
 \item{verbose}{logical, set FALSE to avoid printing of informations}
+
+\item{path_to_file}{if save_results, results of the tuning are save to this
+path}
 }
 \value{
 a list:
@@ -66,4 +65,20 @@ by other metrics.
 tuning considers a list of values of parameters (grid_support) to be tested
 (all the combinations are tested) and find the set of parameters that have
 the best value for the metric selected.
+}
+\details{
+To use a custom method, just pass your function method. Your function has to
+respect the following structure:
+\itemize{
+\item Input: function(data_list, param_1, param_2, ..... , param_x, ...)
+\item Output: A list with:
+\itemize{
+\item partition: an integer vector labelling the sample
+\item element_for_metric: a character that indicates the name of the element
+used with an internal metric for validation. It can be NULL.
+\item output_1
+\item ...
+\item output_x
+}
+}
 }
