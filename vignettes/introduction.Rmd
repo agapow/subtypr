@@ -1,6 +1,6 @@
 ---
 title: "Robustly subtyping patients"
-author: "Paul Agapow"
+author: "Romain Guédon & Paul Agapow"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -13,7 +13,10 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 5,
+  fig.retina = 2
 )
 ```
 
@@ -62,8 +65,40 @@ columns of this table.
 This package broadly follows the tidyverse style guide.
 
 
-## Simple example
+## Simple example 
 
-TODO
+Built-in methods and datasets are embedded, allowing a simple and direct use:
+
+```{r simple_example}
+library(subtypr)
+
+result_snf <- subtype_snf(
+  data_list = breast_cancer_data$data_list,
+  cluster_number = 4
+)
+```
+
+Some visualization too:
+
+```{r viz}
+plot_affinity_matrix(
+  result_snf$affinity_fused,
+  result_snf$partition
+)
+```
+
+Validation with built-in metrics:
+
+```{r metrics}
+overview_metrics(
+  result_snf,
+  internal_metrics = "asw_affinity",
+  true_partition = breast_cancer_data$partition
+)
+```
+
+Use browseVignette("subtypr") to discover other functionnalities...
+
+
 
 
