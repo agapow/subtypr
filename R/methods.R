@@ -186,15 +186,42 @@ subtype_anf <- function(data_list,
 }
 
 
+# To set up the parameters of PerturbationClustering:
+#   * `ncore` Number of cores that the algorithm should use.
+# Default value is 2.
+#
+# * `clusteringMethod`	The name of built-in clustering algorithm that
+# PerturbationClustering will use. Currently supported algorithm are kmeans,
+# pam and hclust. Default value is "kmeans".
+#
+# * `clusteringFunction`	The clustering algorithm function that will be used
+# instead of built-in algorithms.
+# * `clusteringOptions` A list of parameter will be passed to the clustering
+# algorithm in clusteringMethod.
+# * `perturbMethod` The name of built-in perturbation method that
+# PerturbationClustering will use, currently supported methods are noise and
+# subsampling. Default value is "noise".
+# * `perturbFunction` The perturbation method function that will be used
+# instead of built-in ones.
+# * `perturbOptions` A list of parameter will be passed to the perturbation
+# method in perturbMethod.
+# * `iterMin` The minimum number of iterations. Default value is 20.
+# * `iterMax` The maximum number of iterations. Default value is 200.
+# * `madMin` The minimum of Mean Absolute Deviation of AUC of Connectivity
+# matrix for each k. Default value is 1e-03.
+
+
+
+
+
 #' Subtypes using PINSPlus package
 #'
 #' Perform subtyping using multiple types of data
 #'
-#' SubtypingOmicsData implements the Subtyping multi-omic data that are based on
-#'   Perturbaion clustering algorithm of Nguyen, et al (2017). The input is a
+#' subtype_pins uses \code{\link[PINSPlus]{SubtypingOmicsData}}. The input is a
 #'   list of data matrices where each matrix represents the molecular
 #'   measurements of a data type. The input matrices must have the same number
-#'   of rows. SubtypingOmicsData aims to find the optimum number of subtypes
+#'   of rows. The function aims to find the optimum number of subtypes
 #'   and location of each sample in the clusters from integrated input data
 #'   dataList through two processing stages:
 #'
@@ -208,6 +235,8 @@ subtype_anf <- function(data_list,
 #'   * Stage II: The algorithm attempts to split each discovered group if there
 #'     is a strong agreement between data types, or if the subtyping in Stage I
 #'     is very unbalanced.
+#'
+#'
 #'
 #' @param data_list a list of data matrices with continuous data of format
 #'   samples x features (with the same number of samples).
@@ -225,7 +254,11 @@ subtype_anf <- function(data_list,
 #' @param verbose Set it to TRUE of FALSE to get more or less details
 #'   respectively.
 #' @param ... these arguments will be passed to PerturbationClustering
-#'   algorithm. See details for more information.
+#'   algorithm. See \code{\link[PINSPlus]{PerturbationClustering}}.
+#'
+#'
+#'
+#'
 #'
 #' @return a result list containing:
 #'   * $partition: The predicted partition
