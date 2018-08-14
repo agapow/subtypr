@@ -68,11 +68,22 @@ evaluation <- function(data_list, method, grid, grid_row,
 #' (all the combinations are tested) and find the set of parameters that have
 #' the best value for the metric selected.
 #'
+#' To use a custom method, just pass your function method. Your function has to
+#'   respect the following structure:
+#'   * Input: function(data_list, param_1, param_2, ..... , param_x, ...)
+#'   * Output: A list with:
+#'     * partition: an integer vector labelling the sample
+#'     * element_for_metric: a character that indicates the name of the element
+#'     used with an internal metric for validation. It can be NULL.
+#'     * output_1
+#'     * ...
+#'     * output_x
+#'
 #' @param data_list a list of data matrices with continuous data of format
 #'   samples x features (with the same number of samples).
 #'
 #' @param method a string being the name of the built-in method to be used or a
-#'   'method list' with the same format as the built-in ones.
+#'   'method list' with the same format as the built-in ones. See Details
 #'
 #' @param grid_support a list with a set of value for each parameter to be
 #'   tuned. The typo has to be correct. Use formals(method$func) to know all the
