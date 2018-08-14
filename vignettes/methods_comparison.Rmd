@@ -1,0 +1,180 @@
+---
+title: "Methods comparison"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.retina = 2,
+  fig.width = 6,
+  cache.lazy = FALSE
+)
+```
+
+```{r library}
+library(subtypr)
+```
+
+
+Here, we show how to use `subtypr` functionalities to compare the performances of two methods: Similarity Network Fusion and Affinity Network Fusion (ANF).
+
+## Data
+
+We'll use `breast_cancer_data`. It's a breast cancer multi-omic dataset from The Cancer Genome Atlas (TCGA): https://cancergenome.nih.gov/. with known molecular subtypes.
+We'll also use `gbm_data`, a glioblastoma multiforme multi-omic dataset from TCGA too with no molecular subtypes here but with survival data of the patients.
+
+## Breast cancer data analysis
+
+### ANF
+
+We want to tune the parameters `k_affi` and `k_fusion`. See `?subtype_anf`. 
+
+```{r grid_anf}
+grid_support_anf <- list(cluster_number = 4, 
+                         k_affi = seq(10, 25, 5), k_fusion = seq(10, 25, 5))
+```
+
+We'll tune the method according to the available groundtruth, with the external metric v_measure:
+
+```{r tune_anf, eval=FALSE, cache=TRUE}
+result_anf <- tuning(data_list = breast_cancer_data$data_list, 
+                     method = "subtype_anf", 
+                     grid_support = grid_support_anf, 
+                     metric = "v_measure", 
+                     true_partition = breast_cancer_data$partition, 
+                     parallel = T, ncores = 7, 
+                     save_results = T, file_name = "./comparison_tuning_anf.RData")
+```
+```{r load_anf}
+load("./comparison_tuning_anf.RData")
+result_anf <- tuning_result$tuning_result_list
+```
+
+### SNF
+
+```{r grid_snf}
+grid_support_snf <- list(cluster_number = 4, K = seq(10,25,5), alpha = seq(0.3, 0.8, 0.1), t = 30)
+```
+
+```{r tune_snf, eval=FALSE, cache=TRUE}
+result_snf <-  tuning(data_list = breast_cancer_data$data_list, 
+                     method = "subtype_snf", 
+                     grid_support = grid_support_snf, 
+                     metric = "v_measure", 
+                     true_partition = breast_cancer_data$partition, 
+                     parallel = T, ncores = 7, 
+                     save_results = T, file_name = "./comparison_tuning_snf.RData")
+```
+
+```{r load_snf}
+load("./comparison_tuning_snf.RData")
+result_snf <- tuning_result$tuning_result_list
+```
+
+### Comparison of the results
+
+Let's compare the results of the two methods:
+
+```{r comparison}
+table_overview <- rbind(overview_metrics(result_anf$method_res, internal_metrics = "asw_affinity", true_partition = breast_cancer_data$partition, print = F),
+                        overview_metrics(result_snf$method_res, internal_metrics = "asw_affinity", true_partition = breast_cancer_data$partition, print = F))
+
+library(ggplot2)
+method <- as.factor(c(rep("anf",8), rep("snf",8)))
+ggplot(table_overview) + aes(x = metric, y = value, fill = method) + geom_col(position = position_dodge())
+```
+
+As we can see on the plot, ANF & SNF performances are really close (the methods in themselves are very close).
+
+## GBM data analysis
+
+### ANF
+
+We also want to tune the parameters `k_affi` and `k_fusion` but also find the optimal number of cluster because we don't have any ground-truth. Therefore we also just have the internal metric "asw_affinity".
+
+```{r grid_anf_gbm}
+grid_support_anf <- list(cluster_number = 2:8, 
+                         k_affi = seq(10, 25, 5), k_fusion = seq(10, 25, 5))
+```
+
+We'll tune the method according to the available groundtruth, with the external metric v_measure:
+
+```{r tune_anf_gbm, eval=FALSE, cache=TRUE}
+result_anf <- tuning(data_list = gbm_data$data_list, 
+                     method = "subtype_anf", 
+                     grid_support = grid_support_anf, 
+                     metric = "asw_affinity", 
+                     parallel = T, ncores = 7, 
+                     save_results = T, file_name = "./gbm_comparison_tuning_anf.RData")
+```
+
+```{r load_anf_gbm}
+load("./gbm_comparison_tuning_anf.RData")
+result_anf_gbm <- tuning_result$tuning_result_list
+```
+
+### SNF
+
+```{r grid_snf_gbm}
+grid_support_snf <- list(cluster_number = 2:8, K = seq(10,25,5), alpha = seq(0.3, 0.8, 0.1), t = 30)
+```
+
+```{r tune_snf_gbm, eval=FALSE, cache=TRUE}
+result_snf <-  tuning(data_list = gbm_data$data_list, 
+                     method = "subtype_snf", 
+                     grid_support = grid_support_snf, 
+                     metric = "asw_affinity", 
+                     parallel = T, ncores = 7, 
+                     save_results = T, file_name = "./gbm_comparison_tuning_snf.RData")
+```
+
+```{r load_snf_gbm}
+load("./gbm_comparison_tuning_snf.RData")
+result_snf_gbm <- tuning_result$tuning_result_list
+```
+
+### Comparison of the results
+
+Let's compare the results of the two methods:
+
+```{r comparison_gbm}
+table_overview_gbm <- rbind(overview_metrics(result_anf_gbm$method_res, internal_metrics = "asw_affinity", print = F),
+                        overview_metrics(result_snf_gbm$method_res, internal_metrics = "asw_affinity", print = F))
+
+library(ggplot2)
+method <- as.factor(c(rep("anf",1), rep("snf",1)))
+ggplot(table_overview) + aes(x = metric, y = value, fill = method) + geom_col(position = position_dodge())
+```
+
+ 
+```{r full_silhouette}
+plot(silhouette_affinity(pred_partition = result_anf_gbm$method_res$partition, 
+                    affinity_matrix = result_anf_gbm$method_res$affinity_fused)
+)
+
+plot(silhouette_affinity(pred_partition = result_snf_gbm$method_res$partition, 
+                    affinity_matrix = result_snf_gbm$method_res$affinity_fused)
+)
+```
+
+Now, let's use the survival data to assess the clinical validity of the predicted subtypes susing `analyze_survival`:
+
+```{r analyze_survival}
+survival <- gbm_data$survival
+
+analyze_survival(survival_time = survival$Survival, 
+                 death_status = survival$Death, 
+                 patients_partition = result_anf_gbm$method_res$partition)
+
+analyze_survival(survival_time = survival$Survival, 
+                 death_status = survival$Death, 
+                 patients_partition = result_snf_gbm$method_res$partition)
+```
+
+```{r}
+
+```
+
