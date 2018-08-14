@@ -70,9 +70,9 @@ check_distribution(data_list$mirna, thickness = 0.3, split_figures = TRUE)
 ## Features selection
 
 There is a lot of features in our methylation data but a majority of them have a variance close to 0. Therefore, we have to 
-make a selection to avoid considering features with low variance. To do so, we provide `select_features()` to perform variance or mad cutoff or transformation to principal components.
+make a selection to avoid considering features with low variance. To do so, we provide `select_features()` to perform variance-cutoff, MAD-cutoff or PCA.
 
-Here we use the variance cutoff. 
+Here we use the variance-cutoff. 
 
 ```{r select_features_var}
 new_methylation <- select_features(data = data_list$methylation, method = "variance", cutoff = 0.05)
@@ -132,13 +132,21 @@ between the survival curves of the predicted subtypes.
 
 To do so, we use `analyze_survival()`:
 
-```{r analyze_survival}
+```{r analyze_survival, fig.height=4}
 analyze_survival(survival_time = survival_data$Survival, 
                  death_status = survival_data$Death, 
                  patients_partition = result_snf$partition)
 ```
 
+We can see that the subtypes have a significant (5.7e-04) separation between their survival curve.
 
+### Some visualization
+
+We also provide a vizualisation of the results of type affinity matrix sorted by cluster:
+
+```{r plot_affinity, fig.width=5, fig.height=5}
+plot_affinity_matrix(result_snf$affinity_fused, result_snf$partition)
+```
 
 
 
