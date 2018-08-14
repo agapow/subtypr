@@ -1,10 +1,10 @@
 ---
-title: "Tuning parameters and data layer selection"
-author: "Vignette Author"
+title: "Tuning parameters"
+author: "Romain Guédon, Paul Agapow"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Tuning parameters and data layer selection}
+  %\VignetteIndexEntry{Tuning parameters}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,37 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Background
-
-need to tune on hyper-parameters
-not a panacea
-may also need to explore rather than just take best
-
-
-
-
-# Tuning hyper-parameters
-
-## XXX: are they all hyper-parameters
-
-
-
-
-# Data layer selection
-
-Another and potentially important place for tuning lies in selecting which data layers to use for typing. For example, if expression, genomic, epigenomic, proteomic (etc.) matrices are available for analysis, should all be used for typing or just a subset? Different layers (modalities) will contain different information but it is unclear how often this information will be complementary and/or compatiable and how often it will reflect entirely distinct processes. Even a layer that is uninformative may lower analytical power. Initial exploration has shown that an uninformative layer may be equivalent to noise and that either may obsfucate typing unpredictably.
-
-
-
-
-# Robustness ?
-
-Or does this belong in metrics?
-Cross validation
-
-
-
-### Tuning the hyperparameters on an example:
+How to tune the parameters of a method like Similarity Network Fusion (SNF) ?
 
 SNF requires a number of cluster to apply spectral clustering. It also requires hyperparameters: K, alpha and t. The authors give range of values for alpha but not for K nor t. How to pick the good parameters then ?
 
@@ -67,25 +37,81 @@ or if the data itself it too big. Therefore we advise to start exploring hyperpa
 Note also that sometimes there is method-specific tools for tuning the number of cluster. However, these methods also requires the other parameters to be set and because we don't know how to set them, we don't know if the "optimal" number of
 cluster suggested can be meaningless. 
 
+
+```{r library}
+library(subtypr)
+library(ggplot2)
+```
+
+
 Let's set the grid support:
 
-```{r grid_support, cache=TRUE}
+```{r grid_support}
 # The names of the list have to match the names of the method parameters.
-grid_support <- list(cluster_number = 2:5, 
-                     K = seq(10, 25, 3), 
-                     alpha = seq(0.3, 0.8, 0.1),
-                     t = c(10, 20))
+grid_support <- list(
+  cluster_number = 2:5,
+  K = seq(10, 25, 3),
+  alpha = seq(0.3, 0.8, 0.1),
+  t = c(10, 20)
+)
 ```
 
 We'll use an internal metric to perform the tuning: `metric = "asw_affinity"`. "asw_affinity" is the average silhouette width of the clusters (adapted for affinity matrices instead of distance matrices).
 
-```{r tuning_snf, cache = TRUE, dependson=c("grid_support")}
-result_tuning <- tuning(data_list = data_list, method = "subtype_snf", grid_support = grid_support, metric = "asw_affinity", true_partition = NULL, parallel = T, ncores = 7, plot = T)
+```{r tuning_snf, eval=FALSE}
+result_tuning <- tuning(
+  data_list = breast_cancer_data$data_list,
+  method = "subtype_snf",
+  grid_support = grid_support,
+  metric = "asw_affinity",
+  true_partition = NULL,
+  parallel = T,
+  ncores = 7,
+  plot = F,
+  save_results = T,
+  file_name = "./tuning_custom_cache/result_tuning_1.RData"
+)
+```
+
+```{r load, include=FALSE}
+load("./tuning_custom_cache/result_tuning_1.RData")
+result_tuning <- tuning_result$tuning_result_list
+rm(tuning_result)
 ```
 
 Use `$all_metric_values` in your tuning result to have an overview of the values of the metric for all the parameters:
 
-```{r plot_the_result}
-plot(unlist(result_tuning$all_metric_values), ylab = "Metric values")
+```{r plot_the_result, fig.width=6, fig.height=4}
+plot(result_tuning$all_metric_values, ylab = "Metric values", main = "Metric values of all possibilities generated")
 ```
+
+Let's compare the performance between default parameters and internally (without groundtruth) tuned parameters:
+
+```{r without_tuning}
+no_tuning <- subtype_snf(data_list = breast_cancer_data$data_list, cluster_number = 2)
+```
+
+
+```{r overview_metric, fig.width=8, fig.height=3}
+table_overview <- rbind(
+  overview_metrics(result_tuning$method_res,
+    internal_metrics = "asw_affinity",
+    true_partition = breast_cancer_data$partition,
+    print = F
+  ),
+  overview_metrics(no_tuning,
+    internal_metrics = "asw_affinity",
+    true_partition = breast_cancer_data$partition,
+    print = F
+  )
+)
+
+
+tuned <- as.factor(c(rep("yes", 8), rep("no", 8)))
+ggplot(table_overview) + aes(x = metric, y = value, fill = tuned) + geom_col(position = position_dodge())
+```
+
+We can notice a slight improvement in some metrics but SNF is not very sensitive to tuning. 
+
+
 
