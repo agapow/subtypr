@@ -1,6 +1,6 @@
 ---
 title: "A regular worflow of subtyping"
-author: Romain Guédon, Paul Agapow
+author: "Romain Guédon, Paul Agapow"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 number_sections: true
@@ -33,6 +33,8 @@ library(subtypr)
 
 
 ## Data exploration
+
+Let's see how the data looks like:
 
 ```{r load_gbm}
 data_list <- gbm_data$data_list
@@ -99,16 +101,22 @@ To see all the available methods, use:
 ```{r methods_available}
 names(get_method())
 ```
-Here, we'll apply Similarity Network Fusion (SNF). To have more information one the method, use the documentation. For example: `?subtype_snf`. 
-Here, we set an arbitraty number of cluster here and we use default parameters of SNF.
+Here, we'll apply Similarity Network Fusion (SNF) [1]. To have more information one the method, use the documentation. For example: `?subtype_snf`. 
 
-Note that to select parameters values, we provide a tuning function (`?tuning`) that tests a grid of parameters and pick up the parameters with the best score (for the selected metric).
+Here, we set an arbitraty number of cluster here and we use default parameters of SNF:
 
 ```{r}
 result_snf <- subtype_snf(data_list = fs_data_list, cluster_number = 2, K = 20, alpha = 0.5, t = 20)
 ```
 
-All the built-in methods have a similar output structure: the predicted "partition", a character that indicates the data to use for evaluation (e.g. affinity matrix) with standard metrics: "element_for_metric" and other elements:
+Note: to select parameters values, we provide a tuning function (`?tuning`) that tests a grid of parameters and pick up the parameters with the best score (for the selected metric).
+
+All the built-in methods have a similar output structure: 
+* `partition`: the partition computed by the method.
+* `element_for_metric`: a character that indicates the element of the result to use internal metric (e.g. `"affinity_fused"` in SNF for the internal metric: `silhouette_affinity`)
+* method-specific elements...
+
+For example, here are the elements of `subtype_snf`:
 
 ```{r}
 names(result_snf)
@@ -148,7 +156,11 @@ We also provide a vizualisation of the results of type affinity matrix sorted by
 plot_affinity_matrix(result_snf$affinity_fused, result_snf$partition)
 ```
 
+## References
 
-
+[1] Bo Wang, Aziz Mezlini, Feyyaz Demir, Marc Fiume, Zhuowen Tu,
+    Michael Brudno, Benjamin Haibe-Kains and Anna Goldenberg (2018).
+    SNFtool: Similarity Network Fusion. R package version 2.3.0.
+    https://CRAN.R-project.org/package=SNFtool
 
 
