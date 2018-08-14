@@ -46,5 +46,46 @@ Cross validation
 
 
 
+### Tuning the hyperparameters on an example:
 
+SNF requires a number of cluster to apply spectral clustering. It also requires hyperparameters: K, alpha and t. The authors give range of values for alpha but not for K nor t. How to pick the good parameters then ?
+
+We provide `tuning()` to allow a grid search where the performance of the method is assessed by a panel of built-in
+metrics.
+The idea of `tuning()` is that given:
+ * a method, a built-in one or a new one from the user, specified in `method`
+ * a set of values for each parameter, specified in `grid_support`
+ * a metric, specified in `metric`
+ * a partition, specified in `true_partition`, if the selected metric needs one (external metric)
+
+the function will test all the combinations of parameters using parallel computation (if `parallel = TRUE`) and
+select the set of parameters with the best value for the selected metric.
+
+Note that `tuning()` can be really computationnaly expensive if the generated combinations by `grid_support` are too large
+or if the data itself it too big. Therefore we advise to start exploring hyperparameters with a reasonable step between values (using `seq` for example):
+
+Note also that sometimes there is method-specific tools for tuning the number of cluster. However, these methods also requires the other parameters to be set and because we don't know how to set them, we don't know if the "optimal" number of
+cluster suggested can be meaningless. 
+
+Let's set the grid support:
+
+```{r grid_support, cache=TRUE}
+# The names of the list have to match the names of the method parameters.
+grid_support <- list(cluster_number = 2:5, 
+                     K = seq(10, 25, 3), 
+                     alpha = seq(0.3, 0.8, 0.1),
+                     t = c(10, 20))
+```
+
+We'll use an internal metric to perform the tuning: `metric = "asw_affinity"`. "asw_affinity" is the average silhouette width of the clusters (adapted for affinity matrices instead of distance matrices).
+
+```{r tuning_snf, cache = TRUE, dependson=c("grid_support")}
+result_tuning <- tuning(data_list = data_list, method = "subtype_snf", grid_support = grid_support, metric = "asw_affinity", true_partition = NULL, parallel = T, ncores = 7, plot = T)
+```
+
+Use `$all_metric_values` in your tuning result to have an overview of the values of the metric for all the parameters:
+
+```{r plot_the_result}
+plot(unlist(result_tuning$all_metric_values), ylab = "Metric values")
+```
 
