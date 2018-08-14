@@ -28,7 +28,7 @@ Default value is 0.5.}
 respectively.}
 
 \item{...}{these arguments will be passed to PerturbationClustering
-algorithm. See details for more information.}
+algorithm. See \code{\link[PINSPlus]{PerturbationClustering}}.}
 }
 \value{
 a result list containing:
@@ -46,11 +46,10 @@ for the corresponding data matrix provided in dataList.
 Perform subtyping using multiple types of data
 }
 \details{
-SubtypingOmicsData implements the Subtyping multi-omic data that are based on
-Perturbaion clustering algorithm of Nguyen, et al (2017). The input is a
+subtype_pins uses \code{\link[PINSPlus]{SubtypingOmicsData}}. The input is a
 list of data matrices where each matrix represents the molecular
 measurements of a data type. The input matrices must have the same number
-of rows. SubtypingOmicsData aims to find the optimum number of subtypes
+of rows. The function aims to find the optimum number of subtypes
 and location of each sample in the clusters from integrated input data
 dataList through two processing stages:
 \itemize{

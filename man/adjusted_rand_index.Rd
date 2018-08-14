@@ -15,5 +15,5 @@ adjusted_rand_index(pred_partition, true_partition)
 the adjusted rand index of the partitions
 }
 \description{
-Adjusted rand index
+External metric.
 }

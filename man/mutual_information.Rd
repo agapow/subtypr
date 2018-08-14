@@ -15,5 +15,8 @@ mutual_information(pred_partition, true_partition)
 the mutual information of the two partitions
 }
 \description{
+External metric.
+}
+\details{
 consistent with sklearn
 }

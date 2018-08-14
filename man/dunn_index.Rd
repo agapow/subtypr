@@ -15,5 +15,5 @@ dunn_index(pred_partition, distance_matrix)
 the Dunn index of the partitions
 }
 \description{
-Dunn index
+External metric.
 }

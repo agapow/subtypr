@@ -7,7 +7,7 @@
 flag_data(m, flag_fxn = is.na)
 }
 \arguments{
-\item{m}{a feature matrix with samples in rows and features in columns}
+\item{m}{a sample-feature matrix}
 
 \item{flag_fxn}{a boolean function that detects problematic data}
 }
@@ -17,5 +17,6 @@ a summary of how the matrix is affected by problematic data
 \description{
 Many methods have restrictions on the data they can use (most notably
 missing data). This is a simple function for assessing the quality of
-input data, which allows the trigger condition to be modified.
+input data. By default it looks for missing (NA) data although the
+the trigger condition can be modified.
 }

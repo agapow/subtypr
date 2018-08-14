@@ -16,6 +16,9 @@ The homogeneity, the completeness and the v_measure
 of the two partitions.
 }
 \description{
+External metrics.
+}
+\details{
 Like scikitlearn, we'll assume the inputs are two vectors of categoricals,
 or things that can be turned into categoricals.
 }

@@ -15,5 +15,5 @@ meila_vi(pred_partition, true_partition)
 the Meila's variation of information index of the partitions
 }
 \description{
-Meila's variation of information index
+External metric.
 }

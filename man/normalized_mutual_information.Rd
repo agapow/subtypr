@@ -15,5 +15,5 @@ normalized_mutual_information(pred_partition, true_partition)
 The normalized mutual information of the two partitions
 }
 \description{
-Normalized mutual information
+External metric.
 }

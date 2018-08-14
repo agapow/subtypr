@@ -15,5 +15,5 @@ silhouette_affinity(pred_partition, affinity_matrix, average = FALSE)
 a silhouette object
 }
 \description{
-Silhouette index for affinity matrix
+External metric. To be used with affinity matrix and not distance matrix!
 }

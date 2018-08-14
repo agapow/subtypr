@@ -15,7 +15,7 @@ silhouette_distance(pred_partition, distance_matrix, average = FALSE)
 a silhouette object
 }
 \description{
-Classic silhouette index for distance matrix
+External metric. To be used with distance matrix and not affinity matrix!
 }
 \seealso{
 \code{\link[cluster]{silhouette}}
