@@ -304,6 +304,11 @@ subtype_pins <- function(data_list,
 
 
 
+
+subtype_icluster_bayes <- function()
+
+
+
 #' #' Subtypes using ConsensusClusterPlus
 #' #'
 #' #'

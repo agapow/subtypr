@@ -1,6 +1,13 @@
 ---
 title: "Methods comparison"
-output: html_document
+author: Romain Guédon, Paul Agapow
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Methods comparison}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -9,23 +16,18 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.align = "center",
   fig.retina = 2,
-  fig.width = 6,
-  cache.lazy = FALSE
+  fig.width = 6
 )
 ```
 
-```{r library}
-library(subtypr)
-library(ggplot2)
-```
 
 ## Aim
 
 Here, we demonstrate how `subtypr` can be used to compare the performances and
 behaviour of different methods. Such comparisons could be used to assess new
 methods and the performance of different methods over particular datasets. We'll
-illustrate this with Similarity Network Fusion (SNF) and Affinity Network Fusion
-(ANF). These two methods are particularly apt as SNF requires several parameters
+illustrate this with Similarity Network Fusion (SNF) [1] and Affinity Network Fusion
+(ANF) [2]. These two methods are particularly apt as SNF requires several parameters
 where it's unclear how they may effect the solution, while ANF is positioned as
 a more robust version of SNF with less arbitrary parameters. Here we show how a
 "tuned" SNF stacks up against ANF.
@@ -38,6 +40,11 @@ We proceed in three parts to show different ways to use the package:
 
 ## Synthetic data analysis
 
+```{r library}
+library(subtypr)
+library(ggplot2)
+```
+
 We provide a function to generate synthetic data. Two types of synthetic data can be generated: with or without subtypes.
 
 ### Unstructured
@@ -45,7 +52,12 @@ We provide a function to generate synthetic data. Two types of synthetic data ca
 First, we generate unstructured synthetic data of a standard size for multi-omic data integration:
 
 ```{r generate_unstructured_data}
-gaussian_data_list <- generate_synth_data(type = "gaussian", n_samples = 200, n_features = c(500, 1000, 1500), n_layers = 3)
+gaussian_data_list <- generate_synth_data(
+  type = "gaussian",
+  n_samples = 200,
+  n_features = c(500, 1000, 1500),
+  n_layers = 3
+)
 ```
 
 #### SNF
@@ -53,23 +65,30 @@ gaussian_data_list <- generate_synth_data(type = "gaussian", n_samples = 200, n_
 We apply SNF with default parameters and 2 clusters for the spectral clustering:
 
 ```{r snf_gaussian}
-result_snf_gaussian <- subtype_snf(data_list = gaussian_data_list$data_generated, 
-                                   cluster_number = 2)
+result_snf_gaussian <- subtype_snf(
+  data_list = gaussian_data_list$data_generated,
+  cluster_number = 2
+)
 ```
 
 We can plot the silhouette indexes of the result using `silhouette_affinity()`:
 
 ```{r plot_cluster_snf_gaussian, fig.height=5}
-plot(silhouette_affinity(result_snf_gaussian$partition, 
-                         result_snf_gaussian$affinity_fused))
+plot(silhouette_affinity(
+  result_snf_gaussian$partition,
+  result_snf_gaussian$affinity_fused
+))
 ```
 
 As expected, the clusters are not well separated.
 
 We can also plot the affinity matrix, using `plot_affinity_matrix()`:
 
-```{r plot_affinity_snf_gaussian, fig.width=6}
-plot_affinity_matrix(result_snf_gaussian$affinity_fused, result_snf_gaussian$partition)
+```{r plot_affinity_snf_gaussian, fig.width=4, fig.height=4}
+plot_affinity_matrix(
+  result_snf_gaussian$affinity_fused,
+  result_snf_gaussian$partition
+)
 ```
 
 #### ANF
@@ -77,15 +96,26 @@ plot_affinity_matrix(result_snf_gaussian$affinity_fused, result_snf_gaussian$par
 We do the same thing for ANF, using standard values for k-parameters:
 
 ```{r anf_gaussian}
-result_anf_gaussian <- subtype_anf(data_list = gaussian_data_list$data_generated, cluster_number = 2, k_affi=20, k_fusion=20)
+result_anf_gaussian <- subtype_anf(
+  data_list = gaussian_data_list$data_generated,
+  cluster_number = 2,
+  k_affi = 20,
+  k_fusion = 20
+)
 ```
 
 ```{r plot_cluster_anf_gaussian, fig.height=5}
-plot(silhouette_affinity(result_anf_gaussian$partition, result_anf_gaussian$affinity_fused))
+plot(silhouette_affinity(
+  result_anf_gaussian$partition,
+  result_anf_gaussian$affinity_fused
+))
 ```
 
-```{r plot_affinity_anf_gauss, fig.width=6}
-plot_affinity_matrix(result_anf_gaussian$affinity_fused, result_anf_gaussian$partition)
+```{r plot_affinity_anf_gauss, fig.width=4, fig.height=4}
+plot_affinity_matrix(
+  result_anf_gaussian$affinity_fused,
+  result_anf_gaussian$partition
+)
 ```
 
 The structure is as expected once again.
@@ -101,9 +131,11 @@ This method basically use singular value decomposition on real data and then cha
 `sd_signal` is the standard deviation of the signal used for the creation of the structure. The closer it is to 0, the weaker the structure will be. We set `sd_signal = 1.5`:
 
 ```{r moclus_generation}
-moclus_data_list <- generate_synth_data(type = "moclus", 
-                                        support_data_list = gbm_data$data_list, 
-                                        sd_signal = 1.5)
+moclus_data_list <- generate_synth_data(
+  type = "moclus",
+  support_data_list = gbm_data$data_list,
+  sd_signal = 1.5
+)
 ```
 
 #### SNF
@@ -111,11 +143,17 @@ moclus_data_list <- generate_synth_data(type = "moclus",
 We apply SNF on this synthetic data and plot the results:
 
 ```{r snf_moclus}
-result_snf_moclus <- subtype_snf(data_list = moclus_data_list$data_generated, cluster_number = 4)
+result_snf_moclus <- subtype_snf(
+  data_list = moclus_data_list$data_generated,
+  cluster_number = 4
+)
 ```
 
-```{r plot_affinity_moclus_snf}
-plot_affinity_matrix(result_snf_moclus$affinity_fused, result_snf_moclus$partition)
+```{r plot_affinity_moclus_snf, fig.height=4, fig.width=4}
+plot_affinity_matrix(
+  result_snf_moclus$affinity_fused,
+  result_snf_moclus$partition
+)
 ```
 
 Compared to fully unstructured data, we can clearly see the precense of a structure in the data.
@@ -124,28 +162,40 @@ Compared to fully unstructured data, we can clearly see the precense of a struct
 
 
 ```{r anf_moclus}
-result_anf_moclus <- subtype_anf(data_list = moclus_data_list$data_generated, cluster_number = 4, k_affi = 20, k_fusion = 20)
+result_anf_moclus <- subtype_anf(
+  data_list = moclus_data_list$data_generated,
+  cluster_number = 4,
+  k_affi = 20,
+  k_fusion = 20
+)
 ```
 
-```{r plot_affinity_moclus_anf}
-plot_affinity_matrix(result_anf_moclus$affinity_fused, result_anf_moclus$partition)
+```{r plot_affinity_moclus_anf, fig.width=4, fig.height=4}
+plot_affinity_matrix(
+  result_anf_moclus$affinity_fused,
+  result_anf_moclus$partition
+)
 ```
 
 Again, it's noisy but the structure is found by ANF.
 
 We can now use `overview_metric()` to evaluate those results with the built-in metrics:
 
-```{r print_overview_moclus, fig.width=8, fig.height=4}
-ov_moclus <- rbind(overview_metrics(result_anf_moclus, 
-                                    internal_metrics = "asw_affinity", 
-                                    true_partition = moclus_data_list$partition_tot, 
-                                    print = F),
-                   overview_metrics(result_snf_moclus, 
-                                    internal_metrics = "asw_affinity", 
-                                    true_partition = moclus_data_list$partition_tot, 
-                                    print = F))
+```{r print_overview_moclus, fig.width=8, fig.height=3}
+ov_moclus <- rbind(
+  overview_metrics(result_anf_moclus,
+    internal_metrics = "asw_affinity",
+    true_partition = moclus_data_list$partition_tot,
+    print = F
+  ),
+  overview_metrics(result_snf_moclus,
+    internal_metrics = "asw_affinity",
+    true_partition = moclus_data_list$partition_tot,
+    print = F
+  )
+)
 
-method <- as.factor(c(rep("anf",8), rep("snf",8)))
+method <- as.factor(c(rep("anf", 8), rep("snf", 8)))
 ggplot(ov_moclus) + aes(x = metric, y = value, fill = method) + geom_col(position = position_dodge())
 ```
 
@@ -160,24 +210,30 @@ We use `breast_cancer_data`. It's a breast cancer multi-omic dataset from The Ca
 We want to tune the parameters `k_affi` and `k_fusion`. See `?subtype_anf`. 
 
 ```{r grid_anf}
-grid_support_anf <- list(cluster_number = 4, 
-                         k_affi = seq(10, 25, 5), k_fusion = seq(10, 25, 5))
+grid_support_anf <- list(
+  cluster_number = 4,
+  k_affi = seq(10, 25, 5),
+  k_fusion = seq(10, 25, 5)
+)
 ```
 
 We'll tune the method according to the available groundtruth, with the external metric "v_measure":
 
-```{r tune_anf, eval=FALSE, cache=TRUE}
-result_anf <- tuning(data_list = breast_cancer_data$data_list, 
-                     method = "subtype_anf", 
-                     grid_support = grid_support_anf, 
-                     metric = "v_measure", 
-                     true_partition = breast_cancer_data$partition, 
-                     parallel = T, ncores = 7, 
-                     save_results = T, file_name = "./comparison_tuning_anf.RData")
+```{r tune_anf, eval=FALSE}
+result_anf <- tuning(
+  data_list = breast_cancer_data$data_list,
+  method = "subtype_anf",
+  grid_support = grid_support_anf,
+  metric = "v_measure",
+  true_partition = breast_cancer_data$partition,
+  parallel = T, ncores = 7,
+  save_results = T,
+  file_name = "./methods_comparison_custom_cache/comparison_tuning_anf.RData"
+)
 ```
 
 ```{r load_anf, include=FALSE}
-load("./comparison_tuning_anf.RData")
+load("./methods_comparison_custom_cache/comparison_tuning_anf.RData")
 result_anf <- tuning_result$tuning_result_list
 ```
 
@@ -186,21 +242,29 @@ result_anf <- tuning_result$tuning_result_list
 Here, we tune the parameters: `K` and `alpha`:
 
 ```{r grid_snf}
-grid_support_snf <- list(cluster_number = 4, K = seq(10,25,5), alpha = seq(0.3, 0.8, 0.1), t = 30)
+grid_support_snf <- list(
+  cluster_number = 4,
+  K = seq(10, 25, 5),
+  alpha = seq(0.3, 0.8, 0.1),
+  t = 30
+)
 ```
 
-```{r tune_snf, eval=FALSE, cache=TRUE}
-result_snf <-  tuning(data_list = breast_cancer_data$data_list, 
-                     method = "subtype_snf", 
-                     grid_support = grid_support_snf, 
-                     metric = "v_measure", 
-                     true_partition = breast_cancer_data$partition, 
-                     parallel = T, ncores = 7, 
-                     save_results = T, file_name = "./comparison_tuning_snf.RData")
+```{r tune_snf, eval=FALSE}
+result_snf <- tuning(
+  data_list = breast_cancer_data$data_list,
+  method = "subtype_snf",
+  grid_support = grid_support_snf,
+  metric = "v_measure",
+  true_partition = breast_cancer_data$partition,
+  parallel = T, ncores = 7,
+  save_results = T,
+  file_name = "./methods_comparison_custom_cache/comparison_tuning_snf.RData"
+)
 ```
 
 ```{r load_snf, include=FALSE}
-load("./comparison_tuning_snf.RData")
+load("./methods_comparison_custom_cache/comparison_tuning_snf.RData")
 result_snf <- tuning_result$tuning_result_list
 ```
 
@@ -209,12 +273,22 @@ result_snf <- tuning_result$tuning_result_list
 
 Let's compare the results of the two methods:
 
-```{r comparison, fig.width=8, fig.height=5}
-table_overview <- rbind(overview_metrics(result_anf$method_res, internal_metrics = "asw_affinity", true_partition = breast_cancer_data$partition, print = F),
-                        overview_metrics(result_snf$method_res, internal_metrics = "asw_affinity", true_partition = breast_cancer_data$partition, print = F))
+```{r comparison, fig.width=8, fig.height=3}
+table_overview <- rbind(
+  overview_metrics(result_anf$method_res,
+    internal_metrics = "asw_affinity",
+    true_partition = breast_cancer_data$partition,
+    print = F
+  ),
+  overview_metrics(result_snf$method_res,
+    internal_metrics = "asw_affinity",
+    true_partition = breast_cancer_data$partition,
+    print = F
+  )
+)
 
 
-method <- as.factor(c(rep("anf",8), rep("snf",8)))
+method <- as.factor(c(rep("anf", 8), rep("snf", 8)))
 ggplot(table_overview) + aes(x = metric, y = value, fill = method) + geom_col(position = position_dodge())
 ```
 
@@ -229,44 +303,56 @@ We use `gbm_data`, a glioblastoma multiforme multi-omic dataset from TCGA too wi
 We also want to tune the parameters `k_affi` and `k_fusion` but also find the optimal number of cluster because we don't have any ground-truth. Therefore we also just have the internal metric "asw_affinity".
 
 ```{r grid_anf_gbm}
-grid_support_anf_gbm <- list(cluster_number = 2:8, 
-                         k_affi = seq(10, 20, 5), 
-                         k_fusion = seq(10, 20, 5))
+grid_support_anf_gbm <- list(
+  cluster_number = 2:8,
+  k_affi = seq(10, 20, 5),
+  k_fusion = seq(10, 20, 5)
+)
 ```
 
 We'll tune the method according to the available groundtruth, with the external metric v_measure:
 
-```{r tune_anf_gbm, eval=FALSE, cache=TRUE}
-result_anf_gbm <- tuning(data_list = gbm_data$data_list, 
-                     method = "subtype_anf", 
-                     grid_support = grid_support_anf_gbm, 
-                     metric = "asw_affinity", 
-                     parallel = T, ncores = 7, 
-                     save_results = T, file_name = "./gbm_comparison_tuning_anf.RData")
+```{r tune_anf_gbm, eval=FALSE}
+result_anf_gbm <- tuning(
+  data_list = gbm_data$data_list,
+  method = "subtype_anf",
+  grid_support = grid_support_anf_gbm,
+  metric = "asw_affinity",
+  parallel = T, ncores = 7,
+  save_results = T,
+  file_name = "./methods_comparison_custom_cache/gbm_comparison_tuning_anf.RData"
+)
 ```
 
 ```{r load_anf_gbm, include=FALSE}
-load("./gbm_comparison_tuning_anf.RData")
+load("./methods_comparison_custom_cache/gbm_comparison_tuning_anf.RData")
 result_anf_gbm <- tuning_result$tuning_result_list
 ```
 
 ### SNF
 
 ```{r grid_snf_gbm}
-grid_support_snf_gbm <- list(cluster_number = 2:8, K = seq(10,20,5), alpha = seq(0.3, 0.8, 0.1), t = 30)
+grid_support_snf_gbm <- list(
+  cluster_number = 2:8,
+  K = seq(10, 20, 5),
+  alpha = seq(0.3, 0.8, 0.1), t = 30
+)
 ```
 
-```{r tune_snf_gbm, eval=FALSE, cache=TRUE}
-result_snf_gbm <-  tuning(data_list = gbm_data$data_list, 
-                     method = "subtype_snf", 
-                     grid_support = grid_support_snf_gbm, 
-                     metric = "asw_affinity", 
-                     parallel = T, ncores = 7, 
-                     save_results = T, file_name = "./gbm_comparison_tuning_snf.RData")
+```{r tune_snf_gbm, eval=FALSE}
+result_snf_gbm <- tuning(
+  data_list = gbm_data$data_list,
+  method = "subtype_snf",
+  grid_support = grid_support_snf_gbm,
+  metric = "asw_affinity",
+  parallel = T, ncores = 7,
+  save_results = T,
+  file_name = "./methods_comparison_custom_cache/gbm_comparison_tuning_snf.RData"
+)
 ```
 
 ```{r load_snf_gbm, include=FALSE}
-load("./gbm_comparison_tuning_snf.RData")
+load("./methods_comparison_custom_cache/gbm_comparison_tuning_snf.RData")
 result_snf_gbm <- tuning_result$tuning_result_list
 ```
 
@@ -274,23 +360,33 @@ result_snf_gbm <- tuning_result$tuning_result_list
 
 Let's compare the results of the two methods:
 
-```{r comparison_gbm, fig.width=8, fig.height=5}
-table_overview_gbm <- rbind(overview_metrics(result_anf_gbm$method_res, internal_metrics = "asw_affinity", print = F),
-                        overview_metrics(result_snf_gbm$method_res, internal_metrics = "asw_affinity", print = F))
+```{r comparison_gbm, fig.width=3, fig.height=3}
+table_overview_gbm <- rbind(
+  overview_metrics(result_anf_gbm$method_res,
+    internal_metrics = "asw_affinity",
+    print = F
+  ),
+  overview_metrics(result_snf_gbm$method_res,
+    internal_metrics = "asw_affinity",
+    print = F
+  )
+)
 
-method <- as.factor(c(rep("anf",1), rep("snf",1)))
+method <- as.factor(c(rep("anf", 1), rep("snf", 1)))
 ggplot(table_overview_gbm) + aes(x = metric, y = value, fill = method) + geom_col(position = position_dodge())
 ```
 
  
 ```{r full_silhouette, fig.height=5, fig.width=6}
-plot(silhouette_affinity(pred_partition = result_anf_gbm$method_res$partition, 
-                    affinity_matrix = result_anf_gbm$method_res$affinity_fused)
-)
+plot(silhouette_affinity(
+  pred_partition = result_anf_gbm$method_res$partition,
+  affinity_matrix = result_anf_gbm$method_res$affinity_fused
+))
 
-plot(silhouette_affinity(pred_partition = result_snf_gbm$method_res$partition, 
-                    affinity_matrix = result_snf_gbm$method_res$affinity_fused)
-)
+plot(silhouette_affinity(
+  pred_partition = result_snf_gbm$method_res$partition,
+  affinity_matrix = result_snf_gbm$method_res$affinity_fused
+))
 ```
 
 Now, let's use the survival data to assess the clinical validity of the predicted subtypes susing `analyze_survival`:
@@ -298,13 +394,17 @@ Now, let's use the survival data to assess the clinical validity of the predicte
 ```{r analyze_survival, fig.height=4}
 survival <- gbm_data$survival
 
-analyze_survival(survival_time = survival$Survival, 
-                 death_status = survival$Death, 
-                 patients_partition = result_anf_gbm$method_res$partition)
+analyze_survival(
+  survival_time = survival$Survival,
+  death_status = survival$Death,
+  patients_partition = result_anf_gbm$method_res$partition
+)
 
-analyze_survival(survival_time = survival$Survival, 
-                 death_status = survival$Death, 
-                 patients_partition = result_snf_gbm$method_res$partition)
+analyze_survival(
+  survival_time = survival$Survival,
+  death_status = survival$Death,
+  patients_partition = result_snf_gbm$method_res$partition
+)
 ```
 
 The separation between the two clusters is more significant with SNF.
@@ -317,37 +417,54 @@ We use "pam" as the clustering algorithm.
 
 
 ```{r pins, eval=FALSE}
-result_pins_gbm <- subtype_pins(data_list = gbm_data$data_list, 
-                            k_max = 8, 
-                            # args passed to Perturbation clustering:
-                            ncore = 6,
-                            clusteringMethod = "pam",
-                            perturbMethod = "noise",
-                            perturbOptions = list(noise = NULL, noisePercent = "median"),
-                            iterMin = 30,
-                            iterMax = 200,
-                            madMin = 1e-03,
-                            msdMin = 1e-06)
+result_pins_gbm <- subtype_pins(
+  data_list = gbm_data$data_list,
+  k_max = 8,
+  # args passed to Perturbation clustering:
+  ncore = 6,
+  clusteringMethod = "pam",
+  perturbMethod = "noise",
+  perturbOptions = list(noise = NULL, noisePercent = "median"),
+  iterMin = 30,
+  iterMax = 200,
+  madMin = 1e-03,
+  msdMin = 1e-06
+)
 
-save(result_pins_gbm, file = "./result_pins_gbm.RData")
+save(result_pins_gbm,
+  file = "./methods_comparison_custom_cache/result_pins_gbm.RData"
+)
 ```
 
 ```{r load_pins_gbm, include=FALSE}
-load("./result_pins_gbm.RData")
+load("./methods_comparison_custom_cache/result_pins_gbm.RData")
 ```
-
 
 
 What about the survival curves?
 
 ```{r survival_pins, fig.height=4}
-analyze_survival(survival_time = survival$Survival, death_status = survival$Death, patients_partition = result_pins_gbm$partition)
+analyze_survival(
+  survival_time = survival$Survival,
+  death_status = survival$Death,
+  patients_partition = result_pins_gbm$partition
+)
 ```
 
 We can see that even if the cox p-value is less than 0.05, it's greater than SNF and ANF p-values with two clusters and we can see that subtype 1 & 2 have a really similar survival curve. 
 
 ## References
 
-TODO: references for ANF & SNF
+[1] Bo Wang, Aziz Mezlini, Feyyaz Demir, Marc Fiume, Zhuowen Tu,
+    Michael Brudno, Benjamin Haibe-Kains and Anna Goldenberg (2018).
+    SNFtool: Similarity Network Fusion. R package version 2.3.0.
+    https://CRAN.R-project.org/package=SNFtool
+  
+[2] Ma T, Zhang A (2018). ANF: Affinity Network Fusion for Complex 
+    Patient Clustering. R package version 1.2.0. 
+
+
+
+
 
 
