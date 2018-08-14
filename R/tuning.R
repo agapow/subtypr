@@ -125,8 +125,7 @@ tuning <- function(data_list, method, grid_support, metric,
                    parallel = TRUE,
                    ncores = NULL,
                    save_results = FALSE,
-                   path_to_file = "./",
-                   file_name = "tuning_result.RData",
+                   file_name = "./tuning_result.RData",
                    plot = TRUE,
                    verbose = TRUE) {
 
@@ -230,26 +229,14 @@ tuning <- function(data_list, method, grid_support, metric,
   )
 
   # Save the computation:
-
-
   if (save_results) {
-    while (!file.exists(path_to_file)) {
-      path_to_file <- readline("Please provide a valid path
-                               for saving the file: ")
-    }
-    full_file_name <- paste0(path_to_file, file_name)
-    if (file.exists(full_file_name)) {
-      full_file_name <- paste0(path_to_file, "new_", file_name)
-    }
     tuning_result <- list(
-      date_of_execution = Sys.Date(),
-      time_of_execution = execution_time,
-      tuning_result_list = res_list
-    )
-    print(full_file_name)
-    save(tuning_result, file = full_file_name)
+        date_of_execution = Sys.Date(),
+        time_of_execution = execution_time,
+        tuning_result_list = res_list
+      )
+    save(tuning_result, file = file_name)
   }
-
   # Return:
   return(res_list)
 }
@@ -328,27 +315,17 @@ overview_metrics <- function(method_result,
          please provide a ground-truth (and/) or a list of internal metrics")
   } else {
     # compute the values of metrics in actual_list
-    metrics_values <- data.frame(values = 1:l, row.names = names(actual_list))
-
-    # partition = partition,
-    # element_for_metric = "affinity_fused",
-    # affinity_fused = affinity_fused
-
+    metrics_values <- data.frame(value = 1:l, metric = names(actual_list))
+    rownames(metrics_values) = names(actual_list)
     for (metric in actual_list) {
-      metrics_values[metric$name, "values"] <- metric$metric(
+      metrics_values[metric$name, "value"] <- metric$metric(
         pred_partition = method_result$partition,
         true_partition = true_partition,
-        data_for_metric = method_result[[methods_result$element_for_metric]]
+        data_for_metric = method_result[[method_result$element_for_metric]]
       )
-      if (print) {
-        print(paste0(
-          metric$label, " = ",
-          metrics_values[metric$name, "values"]
-        ))
-      }
     }
   }
-
   ## Return
   metrics_values
 }
+
