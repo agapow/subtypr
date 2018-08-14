@@ -28,6 +28,8 @@ entropy <- function(x) {
 
 #' Calculate mutual information of two vectors
 #'
+#' External metric.
+#'
 #' consistent with sklearn
 #'
 #' @param pred_partition partition predicted by a method
@@ -65,6 +67,8 @@ mutual_information <- function(pred_partition, true_partition) {
 
 #' Normalized mutual information
 #'
+#' External metric.
+#'
 #' @param pred_partition partition predicted by a method
 #' @param true_partition "true" partition, aka ground truth
 #'
@@ -78,6 +82,8 @@ normalized_mutual_information <- function(pred_partition, true_partition) {
 }
 
 #' Homogeneity, completeness and V-Measure metrics for partition membership
+#'
+#' External metrics.
 #'
 #' Like scikitlearn, we'll assume the inputs are two vectors of categoricals,
 #' or things that can be turned into categoricals.
@@ -131,6 +137,8 @@ homogeneity_completeness_vmeasure <- function(pred_partition, true_partition) {
 
 #' Classic silhouette index for distance matrix
 #'
+#' External metric. To be used with distance matrix and not affinity matrix!
+#'
 #' @param pred_partition partition predicted by a method, an integer vector
 #' @param distance_matrix a distance matrix
 #'
@@ -153,6 +161,8 @@ silhouette_distance <- function(pred_partition, distance_matrix, average = FALSE
 
 
 #' Silhouette index for affinity matrix
+#'
+#' External metric. To be used with affinity matrix and not distance matrix!
 #'
 #' @param pred_partition partition predicted by a method
 #' @param affinity_matrix an affinity matrix
@@ -228,6 +238,8 @@ silhouette_affinity <- function(pred_partition, affinity_matrix, average = FALSE
 
 #' Adjusted rand index
 #'
+#' External metric.
+#'
 #' @param pred_partition partition predicted by a method
 #' @param true_partition "true" partition, aka ground truth
 #'
@@ -245,6 +257,8 @@ adjusted_rand_index <- function(pred_partition, true_partition) {
 }
 
 #' Meila's variation of information index
+#'
+#' External metric.
 #'
 #' @param pred_partition partition predicted by a method
 #' @param true_partition "true" partition, aka ground truth
@@ -264,6 +278,8 @@ meila_vi <- function(pred_partition, true_partition) {
 }
 
 #' Dunn index
+#'
+#' External metric.
 #'
 #' @param pred_partition partition predicted by a method
 #' @param distance_matrix a distance matrix
