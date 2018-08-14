@@ -1,5 +1,5 @@
 ---
-title: "Regular workflow"
+title: "A regular worflow of subtyping"
 author: Romain Guédon, Paul Agapow
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -49,7 +49,7 @@ The GBM dataset contains 273 patients on 3 layers: mRNA, methylation and miRNA w
 
 To have more insight into the data, we'll use `check_distribution()`:
 
-On methylation data :
+On methylation data:
 
 ```{r check_distribution_methylation}
 check_distribution(data_list$methylation, thickness = 0.1, split_figures = TRUE)
@@ -99,69 +99,48 @@ To see all the available methods, use:
 ```{r methods_available}
 names(get_method())
 ```
-Here, we'll apply Similiarity Network Fusion (SNF). To have more information one the method, use the documentation. For example: `?subtype_snf`.
+Here, we'll apply Similarity Network Fusion (SNF). To have more information one the method, use the documentation. For example: `?subtype_snf`. 
+Here, we set an arbitraty number of cluster here and we use default parameters of SNF.
 
-### Tuning the hyperparameters
+Note that to select parameters values, we provide a tuning function (`?tuning`) that tests a grid of parameters and pick up the parameters with the best score (for the selected metric).
 
-SNF requires a number of cluster to apply spectral clustering. It also requires hyperparameters: K, alpha and t. The authors give range of values for alpha but not for K nor t. How to pick the good parameters then ?
-
-We provide `tuning()` to allow a grid search where the performance of the method is assessed by a panel of built-in
-metrics.
-The idea of `tuning()` is that given:
- * a method, a built-in one or a new one from the user, specified in `method`
- * a set of values for each parameter, specified in `grid_support`
- * a metric, specified in `metric`
- * a partition, specified in `true_partition`, if the selected metric needs one (external metric)
-
-the function will test all the combinations of parameters using parallel computation (if `parallel = TRUE`) and
-select the set of parameters with the best value for the selected metric.
-
-Note that `tuning()` can be really computationnaly expensive if the generated combinations by `grid_support` are too large
-or if the data itself it too big. Therefore we advise to start exploring hyperparameters with a reasonable step between values (using `seq` for example):
-
-Note also that sometimes there is method-specific tools for tuning the number of cluster. However, these methods also requires the other parameters to be set and because we don't know how to set them, we don't know if the "optimal" number of
-cluster suggested can be meaningless. 
-
-Let's set the grid support:
-
-```{r grid_support, cache=TRUE}
-# The names of the list have to match the names of the method parameters.
-grid_support <- list(cluster_number = 2:5, 
-                     K = seq(10, 25, 3), 
-                     alpha = seq(0.3, 0.8, 0.1),
-                     t = c(10, 20))
+```{r}
+result_snf <- subtype_snf(data_list = fs_data_list, cluster_number = 2, K = 20, alpha = 0.5, t = 20)
 ```
 
-We'll use an internal metric to perform the tuning: `metric = "asw_affinity"`. "asw_affinity" is the average silhouette width of the clusters (adapted for affinity matrices instead of distance matrices).
+All the built-in methods have a similar output structure: the predicted "partition", a character that indicates the data to use for evaluation (e.g. affinity matrix) with standard metrics: "element_for_metric" and other elements:
 
-```{r tuning_snf, cache = TRUE, dependson=c("grid_support")}
-result_tuning <- tuning(data_list = data_list, method = "subtype_snf", grid_support = grid_support, metric = "asw_affinity", true_partition = NULL, parallel = T, ncores = 7, plot = T)
+```{r}
+names(result_snf)
 ```
 
-Use `$all_metric_values` in your tuning result to have an overview of the values of the metric for all the parameters:
+### Internal metric: silhouette index
 
-```{r plot_the_result}
-plot(unlist(result_tuning$all_metric_values), ylab = "Metric values")
+Here, we don't have a ground-truth. Therefore, we only have internal metrics to have an idea of the performance of the method. To chose the correct internal metric, see `?metrics_list` to have more information on the built-in metrics.
+Here we chose the silhouette index for affinity matrix:
+
+```{r}
+silx <- silhouette_affinity(result_snf$partition, result_snf$affinity_fused)
+plot(silx)
 ```
+
 
 ### Survival analysis 
 
-A metric evaluate only partial aspects of the clustering results. Therefore, we provide `overview_metrics()` to evaluate the "best" set of parameters returned by `tuning()` with other metrics. 
-Here, the only internal metric suitable for affinity matrix is the metric we used for tuning and we don't have a ground truth... but we have the survival data. We'll use `analyze_survival()`:
+We also have the survival data of these patients. We can see if there is a significant difference 
+between the survival curves of the predicted subtypes.
+
+To do so, we use `analyze_survival()`:
 
 ```{r analyze_survival}
 analyze_survival(survival_time = survival_data$Survival, 
                  death_status = survival_data$Death, 
-                 patients_partition = result_tuning$method_res$partition)
-  
+                 patients_partition = result_snf$partition)
 ```
 
-<!-- ## Comparison of methods -->
 
-<!-- Here, we'll compare the performance of two methods: SNF and Affinity Network Fusion (ANF). The comparison of methods is often done without tuning properly the "adversary" methods. The core idea here is that we'll use `tuning()` to use each methods at their full potential. -->
 
-<!-- ```{r} -->
 
-<!-- ``` -->
+
 
 
