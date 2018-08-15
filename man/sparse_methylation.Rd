@@ -12,7 +12,7 @@ sparse_methylation
 This is the methylation data from \code{gbm_data}, see \code{?gbm_data} but with
 missing values. We removed a variable percentage of features per sample.
 This variable percentage was generated based on a gaussian distribution
-centered on 0.12, with a standard deviation of 0.08. We took the absolute
-value of the negative values.
+centered on 0.12, with a standard deviation of 0.08. We set 0 for the
+negative values.
 }
 \keyword{datasets}

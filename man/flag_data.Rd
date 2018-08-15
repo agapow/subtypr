@@ -4,15 +4,28 @@
 \alias{flag_data}
 \title{Simple quality control on sample-feature matrices}
 \usage{
-flag_data(m, flag_fxn = is.na)
+flag_data(m, flag_fxn = is.na, filter = FALSE, thresh = c(0.2, 0.2),
+  plot = FALSE, print = TRUE)
 }
 \arguments{
-\item{m}{a sample-feature matrix}
+\item{m}{A sample-feature matrix.}
 
-\item{flag_fxn}{a boolean function that detects problematic data}
+\item{flag_fxn}{A boolean function that detects problematic data.}
+
+\item{filter}{logical wether to filter the data. The rows (resp. columns)
+with a percentage of flagged data greater than \code{thresh[1]}
+(resp. \code{thresh[2]}) are removed.}
+
+\item{thresh}{threshold vector: first for rows, second for columns.}
+
+\item{plot}{logical, to plot the histogram of the percentage of flagged
+values per rows or columns.}
+
+\item{print}{logical, to print informations on the number of flagged elements
+in the data.}
 }
 \value{
-a summary of how the matrix is affected by problematic data
+The filtered data if filter is TRUE. Nothing otherwise.
 }
 \description{
 Many methods have restrictions on the data they can use (most notably
