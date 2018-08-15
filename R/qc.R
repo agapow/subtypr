@@ -84,6 +84,8 @@ flag_data <- function(m, flag_fxn = is.na, filter = FALSE,
 }
 
 
+
+
 # filter_flagged_data <- function(flag_list, thresh_rows, thresh_cols) {
 #   # XXX: or should this actually be in the caret data transformation stuff?
 #   # XXX: combine with function above?
