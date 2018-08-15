@@ -1,0 +1,63 @@
+---
+title: "Data processing tools"
+author: "Romain Guédon, Paul Agapow"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data processing tools}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+Here we describe how to use `subtypr` to do:
+ * missing data detection & filtering
+ * missing data imputation
+ * feature selection
+ * normalization & more
+ 
+ 
+```{r library}
+library(subtypr)
+```
+
+First, let's explore the data with `flag_data()`, we use `is.na()` as a detector but it could be `function(p) p < 0` if the data was supposed to be positive only.
+
+```{r}
+flag_data(
+  m = sparse_methylation, 
+  flag_fxn = is.na, 
+  plot = T
+)
+```
+
+
+
+As we can see, there is only 19 rows without any missing data so the missing data is not due to few patients or few features (as it is sometime) and therefore we'll have to impute missing data.
+
+With the plot we have an idea of the distribution of our problematic data to decide how much patients or features are below 20% percent of missing data for example. Here we can see that the majority is below 0.2 so that's not a big lost
+
+We want to delete patients and features with more than 20% and 15% of missing data respectively. We'll use `flag_data()`, setting `filter = TRUE` and putting the values of the treshold for both patients and features in `thresh`:
+
+
+```{r print_ls}
+filtered_data <- flag_data(m = sparse_methylation, flag_fxn = is.na, 
+                           filter = TRUE, thresh = c(0.2, 0.15), print = F)
+```
+
+Now, let's impute data with `pre_process()`:
+
+```{r impute}
+imputed_data <- pre_process(filtered_data, method = "knnImpute", k = 5)
+```
+
+
+
