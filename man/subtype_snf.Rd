@@ -5,7 +5,7 @@
 \title{Subtypes patients using Similarity Network Fusion}
 \usage{
 subtype_snf(data_list, minimal_return = FALSE, cluster_number, K = 20,
-  alpha = 0.5, t = 20, spectral_clust_type = 3)
+  alpha = 0.5, t = 20, spectral_clust_type = 3, just_fuse = FALSE)
 }
 \arguments{
 \item{data_list}{a list of data matrices with continuous data of format
@@ -28,6 +28,9 @@ affinity matrix). Recommended values are between 0.3 and 0.8.}
 
 \item{spectral_clust_type}{The type of spectral clustering, see
 \code{\link[SNFtool]{spectralClustering}} for more information.}
+
+\item{just_fuse}{wetherto just integrate matrices and return the fused matrix
+or not}
 }
 \value{
 a result list containing:

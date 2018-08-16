@@ -4,7 +4,8 @@
 \name{breast_cancer_data}
 \alias{breast_cancer_data}
 \title{Breast cancer multi-omics data}
-\format{The data contains two lists:
+\format{The data contains a training and a testing set, resulting in
+4 elements:
 \itemize{
 \item $data_list that contains:
 \itemize{
@@ -13,6 +14,14 @@
 \item $miRNA: micro RNA expression
 }
 \item $partition: the classification of patients according to
+\url{https://doi.org/10.1073/pnas.191367098}
+\item $test_data_list that contains:
+\itemize{
+\item $mRNA: mRNA expression
+\item $methylation: methylation profile
+\item $miRNA: micro RNA expression
+}
+\item $test_partition: the classification of patients according to
 \url{https://doi.org/10.1073/pnas.191367098}
 }}
 \usage{
