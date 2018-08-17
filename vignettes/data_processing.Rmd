@@ -1,10 +1,10 @@
 ---
-title: "Data processing tools"
+title: "Preparing & preprocessing data"
 author: "Romain Guédon, Paul Agapow"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data processing tools}
+  %\VignetteIndexEntry{Preparing & preprocessing data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,7 +18,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-Here we describe how to use `subtypr` to do:
+
+## Aim
+
+Many methods require data to be in particular ranges or satisfy certain conditions, e.g, a
+small amount or missing data, normalization of all features. Here we show how to use `subtypr`
+for this end, including:
+
  * missing data detection & filtering
  * missing data imputation
  * feature selection
@@ -33,8 +39,8 @@ First, let's explore the data with `flag_data()`, we use `is.na()` as a detector
 
 ```{r}
 flag_data(
-  m = sparse_methylation, 
-  flag_fxn = is.na, 
+  m = sparse_methylation,
+  flag_fxn = is.na,
   plot = T
 )
 ```
@@ -49,8 +55,10 @@ We want to delete patients and features with more than 20% and 15% of missing da
 
 
 ```{r print_ls}
-filtered_data <- flag_data(m = sparse_methylation, flag_fxn = is.na, 
-                           filter = TRUE, thresh = c(0.2, 0.15), print = F)
+filtered_data <- flag_data(
+  m = sparse_methylation, flag_fxn = is.na,
+  filter = TRUE, thresh = c(0.2, 0.15), print = F
+)
 ```
 
 Now, let's impute data with `pre_process()`:
@@ -58,6 +66,7 @@ Now, let's impute data with `pre_process()`:
 ```{r impute}
 imputed_data <- pre_process(filtered_data, method = "knnImpute", k = 5)
 ```
+
 
 
 
