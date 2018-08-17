@@ -8,7 +8,7 @@ subtype_anf(data_list, minimal_return = FALSE, cluster_number, k_affi,
   alpha_affi = 1/6, beta_affi = 1/6, k_fusion = 20,
   weigth_fusion = NULL, type_fusion = c("two-step", "one-step"),
   alpha_fusion = c(1, 1, 0, 0, 0, 0, 0, 0), spectral_type = c("rw",
-  "sym", "unnormalized"), verbose_fusion = FALSE)
+  "sym", "unnormalized"), verbose_fusion = FALSE, just_fuse = FALSE)
 }
 \arguments{
 \item{data_list}{a list of data matrices with continuous data of format
@@ -57,6 +57,9 @@ For more information:
 
 \item{verbose_fusion}{logical(1); if true, print some information concerning
 the fusion step.}
+
+\item{just_fuse}{wetherto just integrate matrices and return the fused matrix
+or not}
 }
 \value{
 a result list containing:

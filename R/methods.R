@@ -25,6 +25,9 @@
 #'   be what's needed to evaluate the goodness of the partition, i.e. the
 #'   partition and the element for internal metrics.
 #'
+#' @param just_fuse wetherto just integrate matrices and return the fused matrix
+#'    or not
+#'
 #' @return a result list containing:
 #'   * $partition: The predicted partition
 #'   * $element_for_metric: The name of the element in the result list.
@@ -44,7 +47,8 @@ subtype_snf <- function(data_list,
                         K = 20,
                         alpha = 0.5,
                         t = 20,
-                        spectral_clust_type = 3) {
+                        spectral_clust_type = 3,
+                        just_fuse = FALSE) {
 
 
   ## Main:
@@ -65,6 +69,9 @@ subtype_snf <- function(data_list,
     K = K,
     t = t
   )
+  if (just_fuse) {
+    return(affinity_fused)
+  }
   # Spectral clustering
   partition <- SNFtool::spectralClustering(
     affinity = affinity_fused,
@@ -84,6 +91,10 @@ subtype_snf <- function(data_list,
 #'
 #' @param data_list a list of data matrices with continuous data of format
 #'   samples x features (with the same number of samples).
+#'
+#' @param minimal_return logical, if TRUE, the result of the function will just
+#'   be what's needed to evaluate the goodness of the partition, i.e. the
+#'   partition and the element for internal metrics.
 #'
 #' @param cluster_number The supposed or previously infered number of clusters.
 #'
@@ -128,10 +139,9 @@ subtype_snf <- function(data_list,
 #' @param verbose_fusion logical(1); if true, print some information concerning
 #'   the fusion step.
 #'
-#' @param minimal_return logical, if TRUE, the result of the function will just
-#'   be what's needed to evaluate the goodness of the partition, i.e. the
-#'   partition and the element for internal metrics.
 #'
+#' @param just_fuse wetherto just integrate matrices and return the fused matrix
+#'    or not
 #'
 #' @return a result list containing:
 #'   * $partition: The predicted partition
@@ -156,7 +166,8 @@ subtype_anf <- function(data_list,
                         type_fusion = c("two-step", "one-step"),
                         alpha_fusion = c(1, 1, 0, 0, 0, 0, 0, 0),
                         spectral_type = c("rw", "sym", "unnormalized"),
-                        verbose_fusion = FALSE) {
+                        verbose_fusion = FALSE,
+                        just_fuse = FALSE) {
   type_fusion <- match.arg(type_fusion)
   spectral_type <- match.arg(spectral_type)
 
@@ -171,6 +182,9 @@ subtype_anf <- function(data_list,
     Wall = affinity_list, K = k_fusion, weight = weigth_fusion,
     type = type_fusion, alpha = alpha_fusion, verbose = verbose_fusion
   )
+  if (just_fuse) {
+    return(affinity_fused)
+  }
 
   partition <- ANF::spectral_clustering(
     A = affinity_fused,
@@ -256,10 +270,6 @@ subtype_anf <- function(data_list,
 #' @param ... these arguments will be passed to PerturbationClustering
 #'   algorithm. See \code{\link[PINSPlus]{PerturbationClustering}}.
 #'
-#'
-#'
-#'
-#'
 #' @return a result list containing:
 #'   * $partition: The predicted partition
 #'   * $element_for_metric: The name of the element in the result list.
@@ -301,10 +311,102 @@ subtype_pins <- function(data_list,
   }
 }
 
+spectral_clustering_for_cc <- function(this_dist, k) {
+  SNFtool::spectralClustering(
+    affinity = as.matrix(this_dist),
+    K = k
+  )
+}
 
+#' Apply consensus clustering on affinity matrix.
+#'
+#' Use spectral clustering as the clustering function of consensus clustering on
+#'   the provided affinity matrix.
+#'
+#' It uses \code{\link[ConsensusClusterPlus]{ConsensusClusterPlus}}.
+#'   ConsensusClusterPlus implements the Consensus Clustering algorithm of Monti,
+#'   et al (2003). The function will subsamples the affinity matrix according
+#'   to pItem, pFeature, weightsItem, and weightsFeature, and clusters the data
+#'   into 2 to maxK clusters using spectral clustering.
+#'
+#'   It will also compute the item consensus results using
+#'   \code{\link[ConsensusClusterPlus]{calcICL}}. For more informations, see the
+#'   documentation of the original package!
+#'
+#'
+#'
+#' @param affinity_matrix affinity matrix (e.g. produced by snf or anf)
+#' @param cluster_number_max integer. The maximum cluster number to evaluate.
+#' @param reps Number of subsamples evaluated.
+#' @param pItem numeric, proportion of items to sample.
+#' @param pFeature numeric, proportion of features to sample.
+#' @param title character for output directory. Directory is created only
+#'   if plot is not NULL or writeTable is TRUE. This title can be an abosulte
+#'   or relative path.
+#' @param innerLinkage heirarchical linkage method for subsampling.
+#' @param finalLinkage heirarchical linkage method for consensus matrix.
+#' @param ml optional. prior result, if supplied then only do graphics and
+#'   tables.
+#' @param tmyPal optional character vector of colors for consensus matrix
+#' @param seed optional numerical value. sets random seed for reproducible
+#' results.
+#' @param plot character value. NULL - print to screen, 'pdf', 'png', 'pngBMP'
+#'   for bitmap png, helpful for large datasets.
+#' @param writeTable logical value. TRUE - write ouput and log to csv.
+#' @param weightsItem optional numerical vector. weights to be used for sampling
+#'   items.
+#' @param weightsFeature optional numerical vector. weights to be used for
+#'   sampling features.
+#' @param verbose boolean. If TRUE, print messages to the screen to indicate
+#'   progress. This is useful for large datasets.
+#' @param corUse optional character value. specifies how to handle missing data
+#'   in correlation distances 'everything','pairwise.complete.obs',
+#'   'complete.obs' see cor() for description.
+#'
+#' @return results of ConsensusClusterPlus & calcICL.
+#' @export
+#'
+consensus_spectral_clustering <- function(
+  affinity_matrix,
+  cluster_number_max = 5,
+  reps = 10,
+  pItem = 0.8, pFeature = 1,
+  title = "Consensus spectral clustering",
+  innerLinkage = "average",
+  finalLinkage = "average",
+  distance = "pearson",
+  ml = NULL,
+  tmyPal = NULL,
+  seed = NULL,
+  plot = NULL,
+  writeTable = FALSE,
+  weightsItem = NULL, weightsFeature = NULL,
+  verbose = F, corUse = "everything") {
 
+  ## Preparation
+  d <- as.dist(affinity_matrix)
 
+  ## Main
 
+  cc <- ConsensusClusterPlus::ConsensusClusterPlus(
+    d = d,
+    maxK = cluster_number_max,
+    reps = reps, pItem = pItem, pFeature = pFeature,
+    clusterAlg = "spectral_clustering_for_cc", title = title,
+    innerLinkage = innerLinkage, finalLinkage = finalLinkage,
+    ml = ml, tmyPal = tmyPal, seed = seed, plot = plot,
+    writeTable = writeTable, weightsItem = weightsItem,
+    weightsFeature = weightsFeature, verbose = verbose, corUse = corUse
+  )
 
+  icl <- ConsensusClusterPlus::calcICL(
+    res = cc, title = title,
+    plot = plot, writeTable = writeTable
+  )
 
-
+  ## Return
+  list(
+    cc_result = cc,
+    icl = icl
+  )
+}
