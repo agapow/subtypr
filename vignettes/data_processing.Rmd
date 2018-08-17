@@ -22,8 +22,8 @@ knitr::opts_chunk$set(
 ## Aim
 
 Many methods require data to be in particular ranges or satisfy certain conditions, e.g, a
-small amount or missing data, normalization of all features. Here we show how to use `subtypr`
-for this end, including:
+a low amount of (or no) missing data, normalization of all features. Here we demonstrate 
+`subtypr` for data preprocessing and preparation, including:
 
  * missing data detection & filtering
  * missing data imputation
